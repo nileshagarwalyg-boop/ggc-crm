@@ -135,10 +135,22 @@ def get_me():
 # ─────────────────────────────────────────────
 # RATES (public read, rates permission write)
 # ─────────────────────────────────────────────
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    """Health check — also verifies Supabase connection."""
+    try:
+        result = sb.table('admin_rates').select('id').limit(1).execute()
+        return jsonify({'status': 'ok', 'db': 'connected', 'env_url': SUPABASE_URL[:30]+'...', 'env_key_len': len(SUPABASE_SERVICE_ROLE_KEY)})
+    except Exception as e:
+        return jsonify({'status': 'error', 'db': str(e), 'env_url': SUPABASE_URL[:30]+'...', 'env_key_len': len(SUPABASE_SERVICE_ROLE_KEY)}), 500
+
 @app.route('/api/rates', methods=['GET'])
 def get_rates():
-    result = sb.table('admin_rates').select('*').execute()
-    return jsonify({r['building']: {'base': r['base_rate'], 'updated': r['updated_at']} for r in result.data})
+    try:
+        result = sb.table('admin_rates').select('*').execute()
+        return jsonify({r['building']: {'base': r['base_rate'], 'updated': r['updated_at']} for r in result.data})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/rates', methods=['PUT'])
 @permission_required('rates.edit')
