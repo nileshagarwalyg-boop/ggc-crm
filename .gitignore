@@ -1,0 +1,12 @@
+.env
+*.db
+*.db-shm
+*.db-wal
+__pycache__/
+*.pyc
+uploads/
+seed_users.py
+migrate_data.py
+setup_supabase.py
+fix_sequences.sql
+.claude/

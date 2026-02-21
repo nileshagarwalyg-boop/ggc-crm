@@ -1,0 +1,3480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Ganga Legend County - Cost Sheet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a;font-size:14px;line-height:1.5}
+    input,select,button,textarea{font-family:'Montserrat',sans-serif}
+    :root{--primary:#1a2e44;--accent:#c8a45c;--accent-light:#e8d5a0;--card:#fff;--border:#e0e0e0;--text:#1a1a1a;--text2:#666;--muted:#999;--ok:#2e7d32;--ok-bg:#e8f5e9}
+
+    @media print{
+      .no-print{display:none!important}
+      .print-show{display:block!important}
+      body{background:#fff;font-size:10px}
+      .bf-page{page-break-after:always;box-shadow:none!important;margin:0!important;border-radius:0!important}
+      .bf-page:last-child{page-break-after:auto}
+    }
+
+    .hdr{background:var(--primary);padding:16px;position:sticky;top:0;z-index:100}
+    .hdr-row{display:flex;align-items:center;gap:12px}
+    .hdr-logo{height:40px;object-fit:contain;border-radius:4px}
+    .hdr-info{flex:1}
+    .hdr-t{color:#fff;font-size:15px;font-weight:700;letter-spacing:.5px}
+    .hdr-s{color:var(--accent);font-size:10px;font-weight:600;letter-spacing:2px;margin-top:2px}
+    .hdr-btn{width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:0 0;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
+
+    /* === MAIN TABS (Cost Sheet / Booking Form) === */
+    .main-tabs{display:flex;background:var(--primary);border-bottom:2px solid var(--accent);padding:0 16px}
+    .main-tab{flex:1;padding:12px 8px;text-align:center;font-size:13px;font-weight:700;color:rgba(255,255,255,.5);cursor:pointer;border:none;background:none;letter-spacing:.5px;position:relative;transition:color .2s}
+    .main-tab.on{color:#fff}
+    .main-tab.on::after{content:'';position:absolute;bottom:-2px;left:10%;right:10%;height:3px;background:var(--accent);border-radius:3px 3px 0 0}
+
+    .tabs{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;background:var(--primary);-webkit-overflow-scrolling:touch}
+    .tabs::-webkit-scrollbar{display:none}
+    .tab{flex-shrink:0;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,.15);background:0 0;color:rgba(255,255,255,.6);cursor:pointer;white-space:nowrap}
+    .tab.on{background:var(--accent);color:var(--primary);border-color:var(--accent)}
+
+    .sel{padding:12px 16px;background:#fff;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:8px}
+    .sel select{flex:1 1 30%;min-width:0;padding:10px 12px;border-radius:8px;border:1.5px solid var(--border);font-size:13px;font-weight:500;background:#fff;color:var(--text);appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+
+    .cnt{padding:16px}
+    .card{background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:12px}
+    .card-h{padding:14px 16px;background:var(--primary);display:flex;align-items:center;justify-content:space-between}
+    .card-h h3{color:#fff;font-size:13px;font-weight:700;letter-spacing:.3px}
+    .card-h .badge{font-size:10px;color:var(--accent);font-weight:600}
+
+    .row{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #f0f0f0}
+    .row:last-child{border-bottom:0}
+    .row-l{flex:1}
+    .row-t{font-size:13px;font-weight:600;color:var(--text)}
+    .row-s{font-size:11px;color:var(--muted);margin-top:2px}
+    .row-a{font-size:15px;font-weight:700;color:var(--text);text-align:right}
+    .row-lk{font-size:11px;color:var(--text2);font-weight:500;text-align:right}
+    .row.sub .row-t{color:var(--text2);font-weight:500;font-size:12px;padding-left:12px}
+    .row.sub .row-a{font-size:13px;font-weight:600;color:var(--text2)}
+    .row.tot{background:var(--primary)}
+    .row.tot .row-t{color:#fff;font-size:14px}
+    .row.tot .row-a{color:var(--accent);font-size:18px}
+    .row.tot .row-lk{color:var(--accent-light)}
+
+    .chips{display:flex;gap:10px;overflow-x:auto;padding:16px;-webkit-overflow-scrolling:touch}
+    .chips::-webkit-scrollbar{display:none}
+    .chip{flex-shrink:0;width:155px;padding:14px;border-radius:10px;border:1.5px solid var(--border);background:#fff;cursor:pointer}
+    .chip.on{background:var(--primary);border-color:var(--accent)}
+    .chip-n{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+    .chip.on .chip-n{color:var(--accent)}
+    .chip-a{font-size:10px;color:var(--muted);margin-top:2px}
+    .chip.on .chip-a{color:rgba(255,255,255,.5)}
+    .chip-p{font-size:16px;font-weight:800;color:var(--text);margin-top:8px}
+    .chip.on .chip-p{color:#fff}
+    .chip-l{font-size:10px;color:var(--muted);margin-top:2px}
+    .chip.on .chip-l{color:var(--accent-light)}
+
+    .slab{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #f0f0f0}
+    .slab:last-child{border-bottom:0}
+    .slab-f{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+    .slab-d{width:8px;height:8px;border-radius:50%}
+    .slab-r{font-size:12px;color:var(--text2);font-weight:600}
+    .slab-p{font-size:14px;font-weight:700;text-align:right}
+    .slab-l{font-size:10px;color:var(--muted);text-align:right}
+
+    .info{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #f0f0f0;font-size:12px}
+    .info:last-child{border-bottom:0}
+    .info-i{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;font-weight:700}
+    .info-i.g{background:#fef3c7;color:#92400e}
+    .info-lb{font-weight:700;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+    .info-v{font-weight:600;color:var(--text);margin-top:1px}
+
+    .offer{background:linear-gradient(135deg,#1a2e44,#2c4a6e);border-radius:12px;overflow:hidden;margin:0 16px 12px;box-shadow:0 2px 12px rgba(26,46,68,.3)}
+    .offer-h{background:var(--accent);padding:10px 16px;text-align:center}
+    .offer-h span{font-size:11px;font-weight:800;color:var(--primary);text-transform:uppercase;letter-spacing:1.5px}
+    .offer-b{padding:20px 16px;text-align:center}
+    .offer-t{font-size:16px;font-weight:800;color:#fff;margin-bottom:8px}
+    .offer-hl{display:inline-block;background:var(--accent);color:var(--primary);padding:4px 12px;border-radius:6px;font-size:13px;font-weight:800;margin:8px 0}
+    .offer-s{font-size:11px;color:rgba(255,255,255,.6);margin-top:8px;font-weight:500}
+
+    .tc{padding:16px;font-size:12px;line-height:1.8;color:var(--text2)}
+    .tc ol{padding-left:20px;margin:0 0 16px}
+    .tc li{padding:4px 0}
+    .tc b{color:var(--text)}
+    .tc-dis{margin-top:12px;padding:12px;background:#fef9ee;border-left:3px solid var(--accent);border-radius:4px;font-size:11px;line-height:1.7}
+    .tc-inc{margin-top:12px;font-size:11px;line-height:1.7}
+    .ft{padding:12px 16px;text-align:center;font-size:10px;color:var(--muted);border-top:1px solid var(--border);background:#fff}
+
+    /* Modal overlay */
+    .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;align-items:center;justify-content:center;padding:20px}
+    .modal-bg.show{display:flex}
+    .modal{background:#fff;border-radius:16px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+    .modal-hd{background:var(--primary);padding:16px;border-radius:16px 16px 0 0;display:flex;align-items:center;justify-content:space-between}
+    .modal-hd h3{color:#fff;font-size:14px;font-weight:700}
+    .modal-cls{background:0 0;border:0;color:rgba(255,255,255,.6);font-size:22px;cursor:pointer;padding:0 4px}
+    .modal-body{padding:20px}
+
+    /* Login form */
+    .login-f{display:flex;flex-direction:column;gap:14px}
+    .login-f label{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+    .login-f input{padding:12px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;font-weight:500;outline:none}
+    .login-f input:focus{border-color:var(--accent)}
+    .login-btn{padding:14px;background:var(--primary);color:#fff;border:0;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer}
+    .login-btn:active{opacity:.8}
+    .login-err{color:#d32f2f;font-size:12px;font-weight:600;text-align:center;display:none}
+
+    /* Admin panel */
+    .adm-section{margin-bottom:20px}
+    .adm-section h4{font-size:12px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid var(--accent)}
+    .adm-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0}
+    .adm-row:last-child{border-bottom:0}
+    .adm-lbl{font-size:12px;font-weight:600;color:var(--text);flex:1}
+    .adm-lbl small{display:block;font-size:10px;color:var(--muted);font-weight:400;margin-top:1px}
+    .adm-inp{width:110px;padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);font-size:13px;font-weight:600;text-align:right;outline:none}
+    .adm-inp:focus{border-color:var(--accent)}
+    .adm-save{width:100%;padding:14px;background:var(--ok);color:#fff;border:0;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-top:16px}
+    .adm-save:active{opacity:.8}
+    .adm-toast{display:none;padding:10px;background:var(--ok-bg);color:var(--ok);font-size:12px;font-weight:600;text-align:center;border-radius:8px;margin-top:10px}
+    .adm-logout{width:100%;padding:12px;background:#fff;color:#d32f2f;border:1.5px solid #d32f2f;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;margin-top:8px}
+    .adm-note{font-size:10px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5}
+    .adm-rise{font-size:11px;color:var(--accent);font-weight:600;background:#fef9ee;padding:8px 12px;border-radius:8px;text-align:center;margin-bottom:12px}
+
+    /* ========== BOOKING FORM STYLES ========== */
+    .bf-wrap{padding:16px;display:none}
+    .bf-wrap.show{display:block}
+
+    /* ========== INVENTORY STYLES ========== */
+    .inv-wrap{padding:12px;display:none;background:#f5f5f5}
+    .inv-wrap.show{display:block}
+    .inv-header{text-align:center;margin-bottom:16px}
+    .inv-title{font-size:16px;font-weight:800;color:var(--primary);letter-spacing:.5px}
+    .inv-sub{font-size:11px;color:var(--muted);margin-top:2px}
+    .inv-legend{display:flex;justify-content:center;gap:20px;margin:10px 0;flex-wrap:wrap}
+    .inv-legend-item{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text2)}
+    .inv-legend-box{width:18px;height:18px;border-radius:4px;border:1.5px solid #ccc}
+    .inv-legend-box.avail{background:#fff}
+    .inv-legend-box.sold{background:#4caf50;border-color:#388e3c}
+    .inv-stats{display:flex;justify-content:center;gap:10px;margin:8px 0 16px;flex-wrap:wrap}
+    .inv-stat{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700}
+    .inv-stat.avail{background:#fff;color:var(--text);border:1.5px solid var(--border)}
+    .inv-stat.sold{background:#e8f5e9;color:#2e7d32;border:1.5px solid #66bb6a}
+    .inv-stat.total{background:var(--primary);color:#fff}
+    .inv-stat.pct{background:#fff3e0;color:#e65100;border:1.5px solid #ffb74d}
+    .inv-grid{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+    .inv-table{border-collapse:separate;border-spacing:3px;margin:0 auto}
+    .inv-floor-label{font-size:10px;font-weight:800;color:var(--primary);text-align:center;padding:4px 6px;white-space:nowrap;vertical-align:middle;min-width:44px}
+    .inv-floor-label.ref{color:#e65100}
+    .inv-cell{width:74px;min-width:74px;padding:6px 3px;border-radius:8px;text-align:center;cursor:default;border:1.5px solid #e0e0e0;transition:transform .15s}
+    .inv-cell:hover{transform:scale(1.08);z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+    .inv-cell.avail{background:#fff}
+    .inv-cell.sold{background:#4caf50;border-color:#388e3c;color:#fff}
+    .inv-cell-no{font-size:11px;font-weight:800;line-height:1.2}
+    .inv-cell-type{font-size:9px;font-weight:700;opacity:.75;margin-top:1px}
+    .inv-cell-area{font-size:8px;font-weight:500;opacity:.6;margin-top:0}
+    .inv-cell.sold .inv-cell-type,.inv-cell.sold .inv-cell-area{opacity:.9}
+    /* Report section */
+    .inv-report{max-width:800px;margin:24px auto 0;padding:0 4px}
+    .inv-report-title{font-size:14px;font-weight:800;color:var(--primary);margin-bottom:12px;text-align:center;letter-spacing:.3px}
+    .inv-report-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:16px}
+    .inv-rcard{background:#fff;border-radius:10px;padding:14px;border:1.5px solid var(--border);position:relative;overflow:hidden}
+    .inv-rcard-type{font-size:12px;font-weight:800;color:var(--primary);margin-bottom:2px}
+    .inv-rcard-area{font-size:10px;color:var(--muted);font-weight:600;margin-bottom:10px}
+    .inv-rcard-row{display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid #f5f5f5}
+    .inv-rcard-row:last-child{border-bottom:none}
+    .inv-rcard-label{color:var(--text2);font-weight:500}
+    .inv-rcard-val{font-weight:700;color:var(--text)}
+    .inv-rcard-val.green{color:#2e7d32}
+    .inv-rcard-bar{height:6px;border-radius:3px;background:#e0e0e0;margin-top:10px;overflow:hidden}
+    .inv-rcard-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#4caf50,#66bb6a)}
+    .inv-summary{background:#fff;border-radius:12px;padding:16px;border:1.5px solid var(--border);margin-top:12px}
+    .inv-summary-title{font-size:12px;font-weight:800;color:var(--primary);margin-bottom:10px}
+    .inv-summary-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f5f5f5;font-size:12px}
+    .inv-summary-row:last-child{border-bottom:none}
+    .inv-summary-label{font-weight:600;color:var(--text2)}
+    .inv-summary-val{font-weight:800;color:var(--primary)}
+
+    /* ========== CUSTOMERS TAB ========== */
+    .cust-wrap{padding:16px;display:none;max-width:900px;margin:0 auto}
+    .cust-wrap.show{display:block}
+    .cust-search{display:flex;gap:8px;margin-bottom:16px}
+    .cust-search input{flex:1;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none}
+    .cust-search input:focus{border-color:var(--accent)}
+    .cust-search button{padding:12px 20px;background:var(--primary);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer}
+    .cust-card{background:#fff;border-radius:10px;padding:14px 16px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);cursor:pointer;transition:box-shadow .2s}
+    .cust-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.12)}
+    .cust-name{font-size:14px;font-weight:700;color:var(--text)}
+    .cust-meta{font-size:11px;color:var(--muted);margin-top:2px}
+    .cust-uid{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-right:8px;background:var(--primary);color:var(--accent);letter-spacing:.5px;font-family:monospace}
+    .cust-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px}
+    .cust-badge.res{background:#e8f5e9;color:#2e7d32}
+    .cust-badge.nri{background:#fff3e0;color:#e65100}
+    .cust-form{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.08);margin-bottom:16px}
+    .cust-form h3{font-size:14px;font-weight:800;color:var(--primary);margin-bottom:16px}
+    .cust-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+    .cust-form-grid .bf-field{margin-bottom:0}
+    .cust-form-grid .bf-field.full{grid-column:1/-1}
+    .cust-form-actions{display:flex;gap:10px;margin-top:16px}
+
+    /* ========== CHANNEL PARTNERS TAB ========== */
+    .cp-wrap{padding:16px;display:none;max-width:900px;margin:0 auto}
+    .cp-wrap.show{display:block}
+    .cp-card{background:#fff;border-radius:10px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+    .cp-card-hdr{display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+    .cp-firm{font-size:14px;font-weight:700;color:var(--text)}
+    .cp-contact{font-size:11px;color:var(--muted);margin-top:2px}
+    .cp-rera{font-size:10px;color:var(--accent);font-weight:600}
+    .cp-fos-list{margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0}
+    .cp-fos-item{display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:12px;border-bottom:1px solid #f8f8f8}
+    .cp-fos-item:last-child{border-bottom:none}
+    .cp-fos-name{font-weight:600;color:var(--text)}
+    .cp-fos-phone{color:var(--muted);font-size:11px}
+    .cp-fos-del{background:#ffebee;color:#c62828;border:none;padding:4px 8px;border-radius:4px;font-size:10px;font-weight:700;cursor:pointer}
+    .cp-fos-add{display:flex;gap:6px;margin-top:8px}
+    .cp-fos-add input{flex:1;padding:8px;border:1.5px solid var(--border);border-radius:6px;font-size:11px;outline:none}
+    .cp-fos-add button{padding:8px 12px;background:var(--primary);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer}
+
+    /* CP Photo */
+    .cp-photo{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);flex-shrink:0}
+    .cp-photo-placeholder{width:56px;height:56px;border-radius:50%;background:#f0f0f0;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--muted);flex-shrink:0}
+    .cp-card-hdr{gap:12px}
+    .photo-capture{margin-top:12px;padding:12px;background:#f8f8f8;border-radius:10px;border:1.5px dashed var(--border)}
+    .photo-capture-title{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+    .photo-capture-btns{display:flex;gap:8px;flex-wrap:wrap}
+    .photo-capture-btns button{padding:10px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--text);display:flex;align-items:center;gap:6px}
+    .photo-capture-btns button:active{opacity:.7}
+    .photo-capture-btns .cam-btn{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .photo-preview{margin-top:10px;text-align:center}
+    .photo-preview img{max-width:200px;max-height:200px;border-radius:10px;border:2px solid var(--accent);object-fit:cover}
+    .camera-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:600;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+    .camera-modal.show{display:flex}
+    .camera-modal video{max-width:100%;max-height:60vh;border-radius:12px;background:#000}
+    .camera-modal canvas{display:none}
+    .camera-modal .cam-actions{display:flex;gap:12px;margin-top:16px}
+    .camera-modal .cam-actions button{padding:14px 28px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:none}
+    .cam-snap{background:var(--accent);color:var(--primary)}
+    .cam-cancel{background:rgba(255,255,255,.2);color:#fff}
+
+    /* ========== ADMIN TAB SECTION ========== */
+    .admin-wrap{padding:16px;display:none;max-width:700px;margin:0 auto}
+    .admin-wrap.show{display:block}
+    .admin-sub-tabs{display:flex;gap:8px;margin-bottom:20px;border-bottom:2px solid var(--border);padding-bottom:12px}
+    .admin-sub-tab{padding:10px 20px;border-radius:10px 10px 0 0;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);border-bottom:none;background:#fff;color:var(--text2);transition:all .2s;position:relative}
+    .admin-sub-tab.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .perm-grid{width:100%;border-collapse:collapse;font-size:11px;background:#fff;border-radius:6px;overflow:hidden;border:1px solid #ddd}
+    .perm-grid th{padding:6px 8px;background:var(--primary);color:#fff;font-weight:700;text-align:center}
+    .perm-grid th:first-child{text-align:left}
+    .perm-grid td{padding:5px 8px;border-bottom:1px solid #f0f0f0;text-align:center}
+    .perm-grid td:first-child{text-align:left;font-weight:600;color:#333}
+    .perm-grid tr:hover{background:#f8f9fa}
+    .perm-grid input[type=checkbox]{width:16px;height:16px;cursor:pointer}
+
+    /* ========== HEADER LOGIN BUTTONS ========== */
+    .hdr-logins{display:flex;gap:6px;align-items:center}
+    .hdr-login-btn{padding:6px 12px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid rgba(255,255,255,.25);background:transparent;color:rgba(255,255,255,.7);letter-spacing:.3px;display:flex;align-items:center;gap:4px;white-space:nowrap;transition:all .2s}
+    .hdr-login-btn:hover{border-color:rgba(255,255,255,.5);color:#fff}
+    .hdr-login-btn.active{background:var(--accent);color:var(--primary);border-color:var(--accent)}
+    .hdr-login-btn.crm-active{background:var(--ok);color:#fff;border-color:var(--ok)}
+    .hdr-login-btn .btn-icon{font-size:13px}
+
+    /* ========== LOGGED-IN USER BAR ========== */
+    .user-bar{display:none;background:var(--ok-bg);padding:6px 16px;font-size:11px;font-weight:600;color:var(--ok);text-align:right}
+    .user-bar.show{display:block}
+    .user-bar button{background:none;border:1px solid var(--ok);color:var(--ok);padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;margin-left:10px}
+
+    /* A4 page container */
+    .bf-page{background:#fff;max-width:800px;margin:0 auto 24px;padding:32px 28px;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+    @media print{.bf-page{max-width:100%;padding:20px;margin:0;box-shadow:none;border-radius:0}}
+
+    .bf-page-hdr{display:flex;align-items:center;justify-content:space-between;padding-bottom:16px;border-bottom:3px solid var(--primary);margin-bottom:20px}
+    .bf-page-hdr img{height:44px;object-fit:contain}
+    .bf-page-hdr .bf-title{text-align:center;flex:1}
+    .bf-page-hdr .bf-title h2{font-size:16px;font-weight:800;color:var(--primary);letter-spacing:1px}
+    .bf-page-hdr .bf-title small{font-size:9px;color:var(--muted);font-weight:600;letter-spacing:1px}
+
+    .bf-section{margin-bottom:16px}
+    .bf-section-h{font-size:11px;font-weight:800;color:#fff;background:var(--primary);padding:8px 14px;border-radius:6px;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+    .bf-section-h .bf-ico{font-size:13px}
+
+    .bf-grid{display:grid;gap:8px 16px}
+    .bf-grid-2{grid-template-columns:1fr 1fr}
+    .bf-grid-3{grid-template-columns:1fr 1fr 1fr}
+    .bf-grid-4{grid-template-columns:1fr 1fr 1fr 1fr}
+
+    .bf-field{margin-bottom:4px}
+    .bf-field label{display:block;font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+    .bf-field input, .bf-field select, .bf-field textarea{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;font-weight:500;outline:none;background:#fff;color:var(--text)}
+    .bf-field input:focus, .bf-field select:focus, .bf-field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(200,164,92,.1)}
+    .bf-field input[readonly]{background:#f8f8f8;color:var(--text2)}
+    .bf-field textarea{resize:vertical;min-height:44px}
+    .bf-field .bf-hint{font-size:8px;color:var(--muted);margin-top:2px}
+
+    .bf-check-row{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:500;color:var(--text2);padding:2px 0}
+    .bf-check-row input[type=checkbox], .bf-check-row input[type=radio]{width:14px;height:14px;accent-color:var(--primary)}
+
+    .bf-auto-tag{display:inline-block;background:#e8f5e9;color:var(--ok);font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:.3px;margin-left:6px;vertical-align:middle}
+
+    .bf-divider{height:1px;background:var(--border);margin:12px 0}
+
+    .bf-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:8px}
+    .bf-table th{background:var(--primary);color:#fff;padding:8px 10px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.3px}
+    .bf-table td{padding:8px 10px;border-bottom:1px solid #f0f0f0}
+    .bf-table input{border:none;border-bottom:1px solid var(--border);border-radius:0;padding:4px 2px;font-size:11px;width:100%;outline:none}
+    .bf-table input:focus{border-bottom-color:var(--accent)}
+
+    .bf-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+    .bf-actions .no-print{display:flex;gap:10px;flex-wrap:wrap;width:100%}
+    .bf-btn{padding:12px 24px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:none;display:flex;align-items:center;gap:8px;transition:opacity .2s}
+    .bf-btn:active{opacity:.7}
+    .bf-btn-primary{background:var(--primary);color:#fff}
+    .bf-btn-accent{background:var(--accent);color:var(--primary)}
+    .bf-btn-outline{background:#fff;color:var(--primary);border:1.5px solid var(--primary)}
+    .bf-btn-danger{background:#fff;color:#d32f2f;border:1.5px solid #d32f2f}
+    .bf-btn-green{background:var(--ok);color:#fff}
+
+    .bf-toast{display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:600}
+    .bf-toast.show{display:block}
+
+    /* Saved bookings list */
+    .bf-list{max-width:800px;margin:0 auto 16px}
+    .bf-list-item{background:#fff;border-radius:12px;padding:0;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);cursor:pointer;transition:box-shadow .2s;overflow:hidden}
+    .bf-list-item:hover{box-shadow:0 3px 12px rgba(0,0,0,.15)}
+    .bf-list-top{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid #f0f0f0}
+    .bf-list-name{font-size:14px;font-weight:700;color:var(--text)}
+    .bf-list-uid{font-size:10px;font-weight:700;color:var(--accent);background:var(--primary);padding:2px 7px;border-radius:4px;margin-right:6px;font-family:monospace}
+    .bf-list-date{font-size:10px;color:var(--muted);font-weight:600}
+    .bf-list-details{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px}
+    .bf-list-tag{font-size:10px;font-weight:600;padding:4px 10px;border-radius:20px;white-space:nowrap}
+    .bf-list-tag.tower{background:#e3f2fd;color:#1565c0}
+    .bf-list-tag.flat{background:#f3e5f5;color:#7b1fa2}
+    .bf-list-tag.type{background:#e8f5e9;color:#2e7d32}
+    .bf-list-tag.amt{background:#fff3e0;color:#e65100}
+    .bf-list-tag.cp{background:#fce4ec;color:#c62828}
+    .bf-list-tag.sales{background:#e0f2f1;color:#00695c}
+    .bf-list-meta{font-size:10px;color:var(--muted);margin-top:2px}
+    .bf-list-actions{display:flex;gap:6px;padding:8px 14px;border-top:1px solid #f5f5f5;background:#fafafa}
+    .bf-list-btn{padding:6px 12px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;border:none}
+    .bf-list-btn.edit{background:#e3f2fd;color:#1565c0}
+    .bf-list-btn.del{background:#ffebee;color:#c62828}
+    .bf-list-btn.view{background:#e8f5e9;color:#2e7d32}
+
+    @media(max-width:600px){
+      .bf-grid-2{grid-template-columns:1fr}
+      .bf-grid-3{grid-template-columns:1fr 1fr}
+      .bf-grid-4{grid-template-columns:1fr 1fr}
+      .bf-page{padding:20px 16px}
+    }
+
+    @media print{
+      @page{size:A4;margin:10mm}
+      .bf-wrap{padding:0}
+      .bf-actions{display:none!important}
+      .bf-list{display:none!important}
+      .bf-toast{display:none!important}
+    }
+  </style>
+</head>
+<body>
+
+<div class="hdr no-print">
+  <div class="hdr-row">
+    <img id="logo" src="Logo file.png" alt="Logo" class="hdr-logo">
+    <div class="hdr-info">
+      <div class="hdr-t">Ganga Legend County</div>
+      <div class="hdr-s">FIXED PRICE</div>
+    </div>
+    <div class="hdr-logins">
+      <button class="hdr-login-btn" id="hdrLoginBtn" onclick="openLogin()" title="Login">
+        <span class="btn-icon">&#128274;</span> <span id="hdrLoginLabel">Login</span>
+      </button>
+      <button class="hdr-btn" onclick="window.print()" title="Print">&#128424;</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGGED-IN USER BAR -->
+<div class="user-bar no-print" id="userBar">
+  Logged in as: <span id="userBarName"></span>
+  <button onclick="doLogout()">Logout</button>
+</div>
+
+<!-- MAIN TABS -->
+<div class="main-tabs no-print">
+  <button class="main-tab on" id="mtab-cs" onclick="switchMainTab('cs')">&#128196; Cost Sheet</button>
+  <button class="main-tab" id="mtab-cust" onclick="switchMainTab('cust')" style="display:none">&#128101; Customers</button>
+  <button class="main-tab" id="mtab-bf" onclick="switchMainTab('bf')" style="display:none">&#128221; Booking</button>
+  <button class="main-tab" id="mtab-cp" onclick="switchMainTab('cp')" style="display:none">&#129309; Channel Partners</button>
+  <button class="main-tab" id="mtab-inv" onclick="switchMainTab('inv')" style="display:none">&#127970; Inventory</button>
+  <button class="main-tab" id="mtab-admin" onclick="switchMainTab('admin')" style="display:none">&#9881; Admin</button>
+</div>
+
+<!-- ============ COST SHEET SECTION ============ -->
+<div id="section-cs">
+  <div class="tabs no-print" id="tabs"></div>
+  <div class="sel no-print">
+    <select id="tSel"></select>
+    <select id="fSel"></select>
+    <select id="uSel"></select>
+  </div>
+  <div class="cnt" id="out"></div>
+
+  <!-- OFFER -->
+  <div class="offer">
+    <div class="offer-h"><span>This Month's Special Offer</span></div>
+    <div class="offer-b">
+      <div class="offer-t">Book Today & Get</div>
+      <div class="offer-hl">1 Year FREE Membership at ILESEUM Club</div>
+      <div class="offer-s">*Offer valid for bookings made this month only. Terms apply.</div>
+    </div>
+  </div>
+
+  <!-- T&C -->
+  <div class="card" style="margin:0 16px 16px">
+    <div class="card-h"><h3>Terms & Conditions</h3></div>
+    <div class="tc">
+      <ol>
+        <li>Agreement value is calculated on <b>Flat Carpet Area Only</b>. 1 Sq.m = 10.764 Sq.ft.</li>
+        <li>Government Taxes <b>subject to change</b>. Legal Charges extra, applicable at time of Agreement.</li>
+        <li>Booking Amount: <b>10%</b></li>
+        <li>Maintenance proposed for <b>24 months</b> or until funds utilized, whichever is earlier. <b>Rs.5/sq.ft.</b> plus taxes on total carpet area, payable before possession.</li>
+        <li>All Cheques in favour of: <b>"Legends County Landmark Pvt Ltd" A/C</b></li>
+      </ol>
+      <div class="tc-dis">
+        <b>Disclaimer:</b> This cost sheet is for reference only and does not constitute an offer or legal commitment. Prices, plans, and specifications are subject to change without prior notice. Final terms as per Agreement to Sale.
+      </div>
+      <div class="tc-inc">
+        Inclusive of <b>Covered Parking</b> as per unit type. Inclusive of Taxes.
+      </div>
+    </div>
+    <div class="ft">Ganga Legend County &mdash; Legends County Landmark Pvt Ltd</div>
+  </div>
+
+  <!-- UNICON FOOTER -->
+  <div style="padding:20px 16px 24px;text-align:center">
+    <img src="unicon logo.png" alt="Unicon" style="height:40px;object-fit:contain;margin-bottom:6px;mix-blend-mode:multiply">
+    <div style="font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.5px">An Innovation by Unicon Real Estate Solutions</div>
+  </div>
+</div>
+
+<!-- ============ BOOKING FORM SECTION ============ -->
+<div id="section-bf" class="bf-wrap">
+  <!-- Search bar for bookings -->
+  <div class="no-print" style="max-width:800px;margin:0 auto 12px">
+    <input type="text" id="bookingSearch" placeholder="🔍 Search by customer name, flat number, tower, CP, sales person..." oninput="searchBookings()" style="width:100%;padding:12px 16px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;font-weight:500;background:#fff">
+  </div>
+  <!-- Saved bookings list -->
+  <div class="bf-list no-print" id="bfList"></div>
+
+  <!-- New booking button -->
+  <div style="max-width:800px;margin:0 auto 16px" class="no-print">
+    <button id="bookingAddBtn" class="bf-btn bf-btn-accent" onclick="newBooking()" style="width:100%;justify-content:center;font-size:14px;padding:14px">+ New Booking Form</button>
+  </div>
+
+  <!-- Booking Form Container -->
+  <div id="bfForm" style="display:none">
+
+    <!-- === PAGE 1: Customer Details === -->
+    <div class="bf-page" id="bfPage1">
+      <div class="bf-page-hdr">
+        <img src="Logo file.png" alt="Logo">
+        <div class="bf-title">
+          <h2>CUSTOMER BOOKING FORM</h2>
+          <small>LEGENDS COUNTY LANDMARK PVT. LTD.</small>
+        </div>
+        <img src="Logo file.png" alt="Logo" style="visibility:hidden">
+      </div>
+
+      <!-- Application Details -->
+      <div class="bf-section">
+        <div class="bf-section-h"><span class="bf-ico">&#128197;</span> Application Details</div>
+        <div class="bf-grid bf-grid-3">
+          <div class="bf-field">
+            <label>Application Date</label>
+            <input type="date" id="bf_appDate">
+          </div>
+          <div class="bf-field">
+            <label>Booking Amount</label>
+            <input type="text" id="bf_amount" placeholder="Amount in Rs.">
+          </div>
+          <div class="bf-field">
+            <label>Cheque / Draft / UTR No.</label>
+            <input type="text" id="bf_chequeNo" placeholder="Enter reference no.">
+          </div>
+        </div>
+        <div class="bf-grid bf-grid-2" style="margin-top:8px">
+          <div class="bf-field">
+            <label>Amount in Figures</label>
+            <input type="text" id="bf_amtFig" placeholder="Rs.">
+          </div>
+          <div class="bf-field">
+            <label>Drawn On (Bank)</label>
+            <input type="text" id="bf_drawnOn" placeholder="Bank name">
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Fill — Dropdowns to speed up form filling -->
+      <div class="bf-section no-print">
+        <div class="bf-section-h" style="background:linear-gradient(135deg,#1565c0,#1a2e44)"><span class="bf-ico">&#9889;</span> Quick Fill — Select &amp; Go <span class="bf-auto-tag">SAVES TIME!</span></div>
+        <div class="bf-grid bf-grid-2" style="gap:8px">
+          <div class="bf-field">
+            <label>🏢 Tower / Building</label>
+            <select id="bf_selTower" onchange="onTowerSelect()">
+              <option value="">-- Select Tower --</option>
+            </select>
+          </div>
+          <div class="bf-field">
+            <label>🏠 Flat Number</label>
+            <select id="bf_selFlat" onchange="onFlatSelect()">
+              <option value="">-- Select Flat --</option>
+            </select>
+          </div>
+          <div class="bf-field">
+            <label>👤 Customer</label>
+            <select id="bf_custSelect" onchange="onCustSelect()"><option value="">-- Select Customer --</option></select>
+          </div>
+          <div class="bf-field">
+            <label>🤝 Channel Partner (optional)</label>
+            <select id="bf_cpSelect" onchange="onCpSelect()"><option value="">-- No CP --</option></select>
+          </div>
+          <div class="bf-field">
+            <label>💼 Sales Person</label>
+            <select id="bf_selSales" onchange="onSalesSelect()">
+              <option value="">-- Select Sales Person --</option>
+            </select>
+          </div>
+          <div class="bf-field">
+            <label>🏗️ Site Head</label>
+            <select id="bf_selSiteHead" onchange="onSiteHeadSelect()">
+              <option value="">-- Select Site Head --</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Applicant 1 -->
+      <div class="bf-section">
+        <div class="bf-section-h"><span class="bf-ico">&#128100;</span> Applicant 1 (Primary)</div>
+        <div class="bf-grid bf-grid-2">
+          <div class="bf-field">
+            <label>Full Name</label>
+            <input type="text" id="bf_app1Name" placeholder="Full name as per PAN">
+          </div>
+          <div class="bf-field">
+            <label>Date of Birth</label>
+            <input type="date" id="bf_app1Dob">
+          </div>
+          <div class="bf-field">
+            <label>Contact No.</label>
+            <input type="tel" id="bf_app1Phone" placeholder="Mobile number">
+          </div>
+          <div class="bf-field">
+            <label>Email ID</label>
+            <input type="email" id="bf_app1Email" placeholder="Email address">
+          </div>
+          <div class="bf-field">
+            <label>PAN Number</label>
+            <input type="text" id="bf_app1Pan" placeholder="XXXXX0000X" maxlength="10" style="text-transform:uppercase">
+          </div>
+          <div class="bf-field">
+            <label>Aadhar Number</label>
+            <input type="text" id="bf_app1Aadhar" placeholder="0000 0000 0000" maxlength="14">
+          </div>
+          <div class="bf-field" style="grid-column:1/-1">
+            <label>Correspondence Address</label>
+            <textarea id="bf_app1Addr" rows="2" placeholder="Full address"></textarea>
+          </div>
+          <div class="bf-field">
+            <label>Sector / Industry</label>
+            <input type="text" id="bf_app1Sector" placeholder="e.g. IT, Medical, Business">
+          </div>
+          <div class="bf-field">
+            <label>Company Name</label>
+            <input type="text" id="bf_app1Company" placeholder="Company / Organisation">
+          </div>
+        </div>
+        <div style="margin-top:8px">
+          <label style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Profession</label>
+          <div style="display:flex;gap:16px;margin-top:4px;flex-wrap:wrap">
+            <label class="bf-check-row"><input type="radio" name="bf_app1Prof" value="Business"> Business</label>
+            <label class="bf-check-row"><input type="radio" name="bf_app1Prof" value="Service"> Service</label>
+            <label class="bf-check-row"><input type="radio" name="bf_app1Prof" value="Professional"> Professional</label>
+          </div>
+        </div>
+        <div style="margin-top:8px">
+          <label style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Preferred Correspondence</label>
+          <div style="display:flex;gap:16px;margin-top:4px;flex-wrap:wrap">
+            <label class="bf-check-row"><input type="radio" name="bf_app1Corr" value="Permanent"> Permanent</label>
+            <label class="bf-check-row"><input type="radio" name="bf_app1Corr" value="Correspondence"> Correspondence</label>
+            <label class="bf-check-row"><input type="radio" name="bf_app1Corr" value="Office"> Office</label>
+          </div>
+        </div>
+        <div style="margin-top:8px">
+          <label style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Status</label>
+          <div style="display:flex;gap:16px;margin-top:4px;flex-wrap:wrap">
+            <label class="bf-check-row"><input type="radio" name="bf_app1Status" value="Resident"> Resident</label>
+            <label class="bf-check-row"><input type="radio" name="bf_app1Status" value="Non Resident (NRI/PIO/OCI)"> Non Resident (NRI/PIO/OCI)</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Applicant 2 -->
+      <div class="bf-section">
+        <div class="bf-section-h"><span class="bf-ico">&#128101;</span> Applicant 2 (Co-Applicant) <span style="font-weight:400;font-size:9px;opacity:.7">- Optional</span></div>
+        <div class="bf-grid bf-grid-2">
+          <div class="bf-field">
+            <label>Full Name</label>
+            <input type="text" id="bf_app2Name" placeholder="Full name as per PAN">
+          </div>
+          <div class="bf-field">
+            <label>Date of Birth</label>
+            <input type="date" id="bf_app2Dob">
+          </div>
+          <div class="bf-field">
+            <label>Contact No.</label>
+            <input type="tel" id="bf_app2Phone" placeholder="Mobile number">
+          </div>
+          <div class="bf-field">
+            <label>Email ID</label>
+            <input type="email" id="bf_app2Email" placeholder="Email address">
+          </div>
+          <div class="bf-field">
+            <label>PAN Number</label>
+            <input type="text" id="bf_app2Pan" placeholder="XXXXX0000X" maxlength="10" style="text-transform:uppercase">
+          </div>
+          <div class="bf-field">
+            <label>Aadhar Number</label>
+            <input type="text" id="bf_app2Aadhar" placeholder="0000 0000 0000" maxlength="14">
+          </div>
+        </div>
+      </div>
+
+      <!-- NRI Section -->
+      <div class="bf-section">
+        <div class="bf-section-h"><span class="bf-ico">&#127758;</span> In Case of Non Resident (NRI)</div>
+        <div class="bf-grid bf-grid-2">
+          <div class="bf-field">
+            <label>Country of Residence</label>
+            <input type="text" id="bf_nriCountry" placeholder="Country">
+          </div>
+          <div class="bf-field">
+            <label>Email ID</label>
+            <input type="email" id="bf_nriEmail" placeholder="NRI email address">
+          </div>
+          <div class="bf-field">
+            <label>NRE A/C Bank</label>
+            <input type="text" id="bf_nriBank" placeholder="Bank name">
+          </div>
+          <div class="bf-field">
+            <label>Branch</label>
+            <input type="text" id="bf_nriBranch" placeholder="Branch name">
+          </div>
+          <div class="bf-field">
+            <label>PDA Holder</label>
+            <input type="text" id="bf_nriPda" placeholder="Power of Attorney holder">
+          </div>
+        </div>
+      </div>
+
+      <!-- Checklist -->
+      <div class="bf-section">
+        <div class="bf-section-h"><span class="bf-ico">&#9989;</span> Document Checklist</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px 16px">
+          <label class="bf-check-row"><input type="checkbox" id="bf_chkPhoto"> Photo ID</label>
+          <label class="bf-check-row"><input type="checkbox" id="bf_chkPassport"> Passport Copy</label>
+          <label class="bf-check-row"><input type="checkbox" id="bf_chkAddr"> Address Proof</label>
+          <label class="bf-check-row"><input type="checkbox" id="bf_chkPan"> PAN Card</label>
+          <label class="bf-check-row"><input type="checkbox" id="bf_chkOCI"> OCI (if applicable)</label>
+          <label class="bf-check-row"><input type="checkbox" id="bf_chkEntity"> Entity / Board Resolution</label>
+        </div>
+      </div>
+
+      <!-- Sales Info -->
+      <div class="bf-section">
+        <div class="bf-section-h"><span class="bf-ico">&#128188;</span> Sales Information</div>
+        <div class="bf-grid bf-grid-2">
+          <div class="bf-field">
+            <label>Sales Person Name & Signature</label>
+            <input type="text" id="bf_salesPerson" placeholder="Name of sales executive">
+          </div>
+          <div class="bf-field">
+            <label>Site Head Name & Signature</label>
+            <input type="text" id="bf_siteHead" placeholder="Site head name">
+          </div>
+        </div>
+        <div class="bf-field" style="margin-top:8px">
+          <label>Remarks (if any)</label>
+          <textarea id="bf_remarks" rows="2" placeholder="Any additional remarks"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- === PAGE 2: Project & Company Details === -->
+    <div class="bf-page" id="bfPage2">
+      <div class="bf-page-hdr">
+        <img src="Logo file.png" alt="Logo">
+        <div class="bf-title">
+          <h2>BOOKING FORM - PAGE 2</h2>
+          <small>LEGENDS COUNTY LANDMARK PVT. LTD.</small>
+        </div>
+        <img src="Logo file.png" alt="Logo" style="visibility:hidden">
+      </div>
+
+      <!-- Project Details (Auto-filled) -->
+      <div class="bf-section">
+        <div class="bf-section-h"><span class="bf-ico">&#127970;</span> Project Details <span class="bf-auto-tag">AUTO-FILLED FROM COST SHEET</span></div>
+        <div class="bf-grid bf-grid-2">
+          <div class="bf-field">
+            <label>Project Name</label>
+            <input type="text" id="bf_projName" value="Ganga Legend County" readonly>
+          </div>
+          <div class="bf-field">
+            <label>Wing / Tower / Building</label>
+            <input type="text" id="bf_projTower" readonly>
+          </div>
+          <div class="bf-field">
+            <label>Flat No.</label>
+            <input type="text" id="bf_projFlatNo" readonly>
+          </div>
+          <div class="bf-field">
+            <label>Flat Type</label>
+            <input type="text" id="bf_projFlat" readonly>
+          </div>
+          <div class="bf-field">
+            <label>Floor No.</label>
+            <input type="text" id="bf_projFloor" readonly>
+          </div>
+          <div class="bf-field">
+            <label>Carpet Area (sq.ft.)</label>
+            <input type="text" id="bf_projCarpet" readonly>
+          </div>
+          <div class="bf-field">
+            <label>Car Parking</label>
+            <input type="text" id="bf_projParking" readonly>
+          </div>
+        </div>
+        <div class="bf-divider"></div>
+        <div class="bf-section-h" style="background:var(--accent);color:var(--primary);font-size:10px;margin-top:8px"><span class="bf-ico">&#128176;</span> Cost Breakdown (Auto from Cost Sheet)</div>
+        <div style="margin:8px 0;padding:12px 14px;background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-radius:10px;border:1.5px solid #66bb6a">
+          <div class="bf-grid bf-grid-2" style="align-items:end">
+            <div class="bf-field" style="margin:0">
+              <label style="color:#2e7d32;font-weight:700;font-size:11px">&#127381; Discount on Total Package</label>
+              <input type="text" id="bf_discount" placeholder="Enter discount amount (max &#8377;5,00,000)" style="border-color:#66bb6a;font-weight:600;font-size:14px" oninput="applyDiscount()">
+            </div>
+            <div class="bf-field" style="margin:0">
+              <label style="color:#2e7d32;font-weight:700;font-size:11px">Original Total Package</label>
+              <input type="text" id="bf_origTP" readonly style="background:#f1f8e9;color:#558b2f;font-weight:700;font-size:14px">
+            </div>
+          </div>
+          <div style="font-size:10px;color:#558b2f;margin-top:6px;font-weight:500">Maximum discount allowed: &#8377;5,00,000. All cost fields below will auto-update.</div>
+        </div>
+        <div class="bf-grid bf-grid-2">
+          <div class="bf-field">
+            <label>Total Package <span id="bf_discLabel" style="color:#2e7d32;font-size:10px;font-weight:700"></span></label>
+            <input type="text" id="bf_projTP" readonly>
+          </div>
+          <div class="bf-field">
+            <label>Agreement Value (Consideration)</label>
+            <input type="text" id="bf_projAV" readonly>
+          </div>
+          <div class="bf-field">
+            <label>Stamp Duty</label>
+            <input type="text" id="bf_projSD" readonly>
+          </div>
+          <div class="bf-field">
+            <label>GST</label>
+            <input type="text" id="bf_projGST" readonly>
+          </div>
+          <div class="bf-field">
+            <label>Registration</label>
+            <input type="text" id="bf_projReg" readonly>
+          </div>
+          <div class="bf-field">
+            <label>Grand Total</label>
+            <input type="text" id="bf_projGT" readonly style="font-weight:700;color:var(--primary)">
+          </div>
+          <div class="bf-field">
+            <label>Booking Amount (10% of AV)</label>
+            <input type="text" id="bf_projBookAmt" readonly>
+          </div>
+          <div class="bf-field">
+            <label>RERA Registration No.</label>
+            <input type="text" id="bf_projRera" readonly>
+          </div>
+        </div>
+        <div class="bf-field" style="margin-top:4px">
+          <label>Consideration Value</label>
+          <input type="text" id="bf_projValue" readonly>
+          <div class="bf-hint">*Consideration Value Excludes Govt Taxes + Statutory Charges + Society & Other Charges + Maintenance & Outgoings</div>
+        </div>
+        <div style="margin-top:8px;padding:10px;background:#f0f7ff;border-radius:8px;font-size:11px;color:var(--primary);font-weight:600;text-align:center">
+          As Per Cost Sheet Attached
+        </div>
+      </div>
+
+      <!-- Company / Partnership Details (for business buyers) -->
+      <div class="bf-section">
+        <div class="bf-section-h"><span class="bf-ico">&#127970;</span> Company / Partnership Details <span style="font-weight:400;font-size:9px;opacity:.7">- If applicable</span></div>
+        <div class="bf-grid bf-grid-2">
+          <div class="bf-field">
+            <label>Company Name</label>
+            <input type="text" id="bf_compName" placeholder="Company / Partnership name">
+          </div>
+          <div class="bf-field">
+            <label>Proprietor / Partnership</label>
+            <input type="text" id="bf_compProp" placeholder="Type of entity">
+          </div>
+          <div class="bf-field">
+            <label>PAN Number</label>
+            <input type="text" id="bf_compPan" placeholder="Company PAN" maxlength="10" style="text-transform:uppercase">
+          </div>
+          <div class="bf-field">
+            <label>Contact Person Name</label>
+            <input type="text" id="bf_compContact" placeholder="Contact person">
+          </div>
+          <div class="bf-field" style="grid-column:1/-1">
+            <label>Company Address</label>
+            <textarea id="bf_compAddr" rows="2" placeholder="Full company address with pin code"></textarea>
+          </div>
+          <div class="bf-field">
+            <label>Mobile No.</label>
+            <input type="tel" id="bf_compMobile" placeholder="Mobile number">
+          </div>
+          <div class="bf-field">
+            <label>Email ID</label>
+            <input type="email" id="bf_compEmail" placeholder="Company email">
+          </div>
+        </div>
+
+        <!-- Company signatories table -->
+        <div style="margin-top:12px">
+          <label style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Signatories / Partners</label>
+          <table class="bf-table">
+            <thead><tr><th>Name</th><th>Date of Birth</th><th>Aadhar Card No.</th><th>PAN Number</th></tr></thead>
+            <tbody>
+              <tr><td><input type="text" id="bf_sig1Name" placeholder="Name"></td><td><input type="date" id="bf_sig1Dob"></td><td><input type="text" id="bf_sig1Aadhar" placeholder="Aadhar" maxlength="14"></td><td><input type="text" id="bf_sig1Pan" placeholder="PAN" maxlength="10" style="text-transform:uppercase"></td></tr>
+              <tr><td><input type="text" id="bf_sig2Name" placeholder="Name"></td><td><input type="date" id="bf_sig2Dob"></td><td><input type="text" id="bf_sig2Aadhar" placeholder="Aadhar" maxlength="14"></td><td><input type="text" id="bf_sig2Pan" placeholder="PAN" maxlength="10" style="text-transform:uppercase"></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Loan Details -->
+      <div class="bf-section">
+        <div class="bf-section-h"><span class="bf-ico">&#127974;</span> Loan Details</div>
+        <div style="margin-bottom:8px">
+          <label style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Have You Opted For Loan?</label>
+          <div style="display:flex;gap:16px;margin-top:4px">
+            <label class="bf-check-row"><input type="radio" name="bf_loanOpt" value="YES" onchange="toggleLoan()"> YES</label>
+            <label class="bf-check-row"><input type="radio" name="bf_loanOpt" value="NO" onchange="toggleLoan()" checked> NO</label>
+          </div>
+        </div>
+        <div id="bf_loanFields" style="display:none">
+          <div class="bf-grid bf-grid-2">
+            <div class="bf-field">
+              <label>Bank / Financial Institution</label>
+              <input type="text" id="bf_loanBank" placeholder="Bank name">
+            </div>
+            <div class="bf-field">
+              <label>Contact Person at Bank</label>
+              <input type="text" id="bf_loanContact" placeholder="Name & number">
+            </div>
+            <div class="bf-field">
+              <label>Own Contribution %</label>
+              <input type="number" id="bf_loanOwn" placeholder="e.g. 30" min="0" max="100">
+            </div>
+            <div class="bf-field">
+              <label>Home Loan Amount %</label>
+              <input type="number" id="bf_loanAmt" placeholder="e.g. 70" min="0" max="100">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- How Did You Know -->
+      <div class="bf-section">
+        <div class="bf-section-h"><span class="bf-ico">&#128227;</span> How Did You Come To Know About The Project?</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px 16px">
+          <label class="bf-check-row"><input type="checkbox" id="bf_srcNewspaper"> Newspaper</label>
+          <label class="bf-check-row"><input type="checkbox" id="bf_srcHoarding"> Hoardings / Kiosks</label>
+          <label class="bf-check-row"><input type="checkbox" id="bf_srcWebsite"> Website / Online</label>
+          <label class="bf-check-row"><input type="checkbox" id="bf_srcMagazine"> Magazines</label>
+          <label class="bf-check-row"><input type="checkbox" id="bf_srcEmail"> E-Mailers</label>
+          <label class="bf-check-row"><input type="checkbox" id="bf_srcSMS"> SMS</label>
+          <label class="bf-check-row"><input type="checkbox" id="bf_srcRef"> Reference</label>
+          <label class="bf-check-row"><input type="checkbox" id="bf_srcCP"> Channel Partners</label>
+          <label class="bf-check-row"><input type="checkbox" id="bf_srcExisting"> Existing Customer</label>
+          <label class="bf-check-row"><input type="checkbox" id="bf_srcPassby"> Passing By</label>
+          <label class="bf-check-row"><input type="checkbox" id="bf_srcExhibition"> Exhibition</label>
+        </div>
+        <div class="bf-field" style="margin-top:8px">
+          <label>Others (Please Specify)</label>
+          <input type="text" id="bf_srcOther" placeholder="Specify other source">
+        </div>
+      </div>
+
+      <!-- Channel Partner -->
+      <div class="bf-section">
+        <div class="bf-section-h"><span class="bf-ico">&#129309;</span> Channel Partner / Agency Details</div>
+        <div class="bf-grid bf-grid-2">
+          <div class="bf-field">
+            <label>Agency / Partner Name</label>
+            <input type="text" id="bf_cpName" placeholder="Channel partner name">
+          </div>
+          <div class="bf-field">
+            <label>Contact Person / Proprietor</label>
+            <input type="text" id="bf_cpPerson" placeholder="Contact person name">
+          </div>
+          <div class="bf-field">
+            <label>Mobile Number</label>
+            <input type="tel" id="bf_cpMobile" placeholder="Mobile number">
+          </div>
+          <div class="bf-field">
+            <label>Landline No.</label>
+            <input type="tel" id="bf_cpLandline" placeholder="Landline number">
+          </div>
+          <div class="bf-field">
+            <label>Email ID</label>
+            <input type="email" id="bf_cpEmail" placeholder="Email address">
+          </div>
+          <div class="bf-field">
+            <label>RERA Registration No.</label>
+            <input type="text" id="bf_cpRera" placeholder="Agent RERA no.">
+          </div>
+        </div>
+      </div>
+
+      <!-- Addresses -->
+      <div class="bf-section">
+        <div class="bf-section-h"><span class="bf-ico">&#128205;</span> Developer & Corporate Address</div>
+        <div style="font-size:11px;line-height:1.7;color:var(--text2);padding:4px 0">
+          <div><b>Developer:</b> LEGENDS COUNTY LANDMARK PVT. LTD.</div>
+          <div><b>Site Address:</b> Ganga Legends County, IBM, D.P. Road, Ram Nagar, Bavdhan, Off Pashan, Pune</div>
+          <div><b>Corporate:</b> Goel Ganga India Pvt. Ltd., 3rd Floor, San Mahul Commercial Complex, B. Nagar Garden Road, Opp. The Poona Club, Camp, Pune - 411001</div>
+          <div><b>MahaRERA:</b> P52100076968 | maharera.maharashtra.gov.in</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="bf-actions no-print" style="max-width:800px;margin:0 auto">
+      <div class="no-print">
+        <button class="bf-btn bf-btn-green" onclick="saveBooking()">&#128190; Save Booking</button>
+        <button class="bf-btn bf-btn-primary" onclick="window.print()">&#128424; Print A4</button>
+        <button class="bf-btn bf-btn-outline" onclick="cancelBooking()">&#10060; Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CUSTOMERS SECTION ============ -->
+<div id="section-cust" class="cust-wrap">
+  <div class="cust-search">
+    <input type="text" id="custSearch" placeholder="Search by name, phone or email..." oninput="searchCustomers()">
+    <button id="custAddBtn" onclick="showCustForm()">+ Add Customer</button>
+  </div>
+  <div id="custFormWrap" style="display:none">
+    <div class="cust-form">
+      <h3 id="custFormTitle">&#128100; Add New Customer</h3>
+      <input type="hidden" id="custEditId" value="">
+      <div class="cust-form-grid">
+        <div class="bf-field"><label>Full Name *</label><input type="text" id="cf_name" placeholder="Full name as per PAN"></div>
+        <div class="bf-field"><label>Phone *</label><input type="tel" id="cf_phone" placeholder="Mobile number"></div>
+        <div class="bf-field"><label>Email</label><input type="email" id="cf_email" placeholder="Email address"></div>
+        <div class="bf-field"><label>PAN</label><input type="text" id="cf_pan" placeholder="XXXXX0000X" maxlength="10" style="text-transform:uppercase"></div>
+        <div class="bf-field"><label>Aadhar</label><input type="text" id="cf_aadhar" placeholder="0000 0000 0000" maxlength="14"></div>
+        <div class="bf-field"><label>Date of Birth</label><input type="date" id="cf_dob"></div>
+        <div class="bf-field full"><label>Address</label><textarea id="cf_address" rows="2" placeholder="Full address"></textarea></div>
+        <div class="bf-field"><label>Company</label><input type="text" id="cf_company" placeholder="Company / Organisation"></div>
+        <div class="bf-field"><label>Profession</label>
+          <select id="cf_profession"><option value="">Select</option><option>Salaried</option><option>Business</option><option>Professional</option></select>
+        </div>
+        <div class="bf-field"><label>Status</label>
+          <select id="cf_status"><option value="Resident">Resident</option><option value="NRI">NRI</option></select>
+        </div>
+        <div class="bf-field"><label>Notes</label><input type="text" id="cf_notes" placeholder="Any notes"></div>
+      </div>
+      <div class="cust-form-actions">
+        <button class="bf-btn bf-btn-green" onclick="saveCust()">&#128190; Save Customer</button>
+        <button class="bf-btn bf-btn-outline" onclick="hideCustForm()">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <div id="custList"><div style="text-align:center;padding:30px;color:var(--muted)">Loading customers...</div></div>
+</div>
+
+<!-- ============ CHANNEL PARTNERS SECTION ============ -->
+<div id="section-cp" class="cp-wrap">
+  <div style="display:flex;gap:8px;margin-bottom:16px">
+    <div style="flex:1;font-size:14px;font-weight:800;color:var(--primary)">&#129309; Channel Partners</div>
+    <button id="cpAddBtn" class="bf-btn bf-btn-accent" style="padding:8px 16px;font-size:12px" onclick="showCpForm()">+ Add CP</button>
+  </div>
+  <div id="cpFormWrap" style="display:none">
+    <div class="cust-form">
+      <h3 id="cpFormTitle">&#129309; Add Channel Partner</h3>
+      <input type="hidden" id="cpEditId" value="">
+      <div class="cust-form-grid">
+        <div class="bf-field"><label>Firm Name *</label><input type="text" id="cpf_firm" placeholder="CP Firm name"></div>
+        <div class="bf-field"><label>Contact Person</label><input type="text" id="cpf_person" placeholder="Main contact person"></div>
+        <div class="bf-field"><label>Phone</label><input type="tel" id="cpf_phone" placeholder="Phone number"></div>
+        <div class="bf-field"><label>Email</label><input type="email" id="cpf_email" placeholder="Email address"></div>
+        <div class="bf-field"><label>RERA No.</label><input type="text" id="cpf_rera" placeholder="Agent RERA registration"></div>
+        <div class="bf-field full"><label>Address</label><textarea id="cpf_address" rows="2" placeholder="Office address"></textarea></div>
+      </div>
+      <!-- Photo Capture -->
+      <div class="photo-capture">
+        <div class="photo-capture-title">&#128247; CP Photo</div>
+        <div class="photo-capture-btns">
+          <button class="cam-btn" onclick="openCamera()">&#128247; Take Photo</button>
+          <button onclick="document.getElementById('cpf_fileInput').click()">&#128193; Upload Photo</button>
+          <input type="file" id="cpf_fileInput" accept="image/*" style="display:none" onchange="onPhotoFileSelect(event)">
+        </div>
+        <div class="photo-preview" id="cpPhotoPreview"></div>
+      </div>
+      <div class="cust-form-actions">
+        <button class="bf-btn bf-btn-green" onclick="saveCp()">&#128190; Save CP</button>
+        <button class="bf-btn bf-btn-outline" onclick="hideCpForm()">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <div id="cpList"><div style="text-align:center;padding:30px;color:var(--muted)">Loading channel partners...</div></div>
+</div>
+
+<!-- ============ INVENTORY SECTION ============ -->
+<div id="section-inv" class="inv-wrap">
+  <div id="invContent"></div>
+</div>
+
+<!-- ============ ADMIN SECTION ============ -->
+<div id="section-admin" class="admin-wrap">
+  <div id="adminContent"></div>
+</div>
+
+<!-- Toast -->
+<div class="bf-toast" id="bfToast"></div>
+
+<!-- LOGIN MODAL (Unified) -->
+<div class="modal-bg" id="loginModal">
+  <div class="modal">
+    <div class="modal-hd"><h3>&#128274; Login</h3><button class="modal-cls" onclick="closeModals()">&times;</button></div>
+    <div class="modal-body">
+      <div class="login-f">
+        <div>
+          <label>Username</label>
+          <input type="text" id="adm-user" autocomplete="off" placeholder="Username">
+        </div>
+        <div>
+          <label>Password</label>
+          <input type="password" id="adm-pass" autocomplete="off" placeholder="Password">
+        </div>
+        <div class="login-err" id="loginErr">Invalid username or password</div>
+        <button class="login-btn" onclick="doLogin()">Login</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CAMERA MODAL -->
+<div class="camera-modal" id="cameraModal">
+  <video id="camVideo" autoplay playsinline></video>
+  <canvas id="camCanvas"></canvas>
+  <div class="cam-actions">
+    <button class="cam-snap" onclick="capturePhoto()">&#128248; Capture</button>
+    <button class="cam-cancel" onclick="closeCamera()">&#10060; Cancel</button>
+  </div>
+</div>
+
+
+<script>
+/* ============================================================
+   DATA & STATE
+   ============================================================ */
+var FLOOR_RISE = 150;
+var SLABS = [
+  {l:'1st-5th Floor',a:1,b:5,k:'1-5',m:0},
+  {l:'6th-10th Floor',a:6,b:10,k:'6-10',m:1},
+  {l:'11th-15th Floor',a:11,b:15,k:'11-15',m:2},
+  {l:'16th-20th Floor',a:16,b:20,k:'16-20',m:3},
+  {l:'21st-27th Floor',a:21,b:27,k:'21-27',m:4}
+];
+
+var D={
+  B5:{
+    name:'B5 Tower',rera:'P52100076756',
+    base:12000,
+    units:[
+      {n:'3 BHK',sq:1262,pk:'2 Covered Parking'},
+      {n:'3 BHK',sq:1272,pk:'2 Covered Parking'},
+      {n:'3.5 BHK',sq:1402,pk:'2 Covered Parking'},
+      {n:'3.5 BHK',sq:1470,pk:'2 Covered Parking'}
+    ]
+  },
+  B7:{
+    name:'B7 Tower',rera:'P52100076968',
+    base:13500,
+    units:[
+      {n:'4 BHK A',sq:1411,pk:'2 Covered Parking'},
+      {n:'4 BHK B',sq:1294,pk:'2 Covered Parking'},
+      {n:'3 BHK A',sq:1222,pk:'2 Covered Parking'},
+      {n:'2.5 BHK',sq:1030,pk:'1 Covered Parking'},
+      {n:'1.5 BHK (Refuge)',sq:821,pk:'1 Covered Parking'}
+    ],
+    flats:[] // Generated below
+  }
+};
+
+/* Generate B7 flat inventory (216 units, 8 per floor, floors 1-27) */
+(function genB7Flats(){
+  var STD=[
+    {pos:'01',type:'4 BHK A',sq:1411,pk:'2 Covered Parking'},
+    {pos:'02',type:'4 BHK B',sq:1294,pk:'2 Covered Parking'},
+    {pos:'03',type:'2.5 BHK B',sq:1030,pk:'1 Covered Parking'},
+    {pos:'04',type:'3 BHK A',sq:1222,pk:'2 Covered Parking'},
+    {pos:'05',type:'4 BHK B',sq:1294,pk:'2 Covered Parking'},
+    {pos:'06',type:'4 BHK A',sq:1411,pk:'2 Covered Parking'},
+    {pos:'07',type:'3 BHK B',sq:1222,pk:'2 Covered Parking'},
+    {pos:'08',type:'2.5 BHK A',sq:1030,pk:'1 Covered Parking'}
+  ];
+  var RF=[7,12,17,22]; // Refuge floors
+  var flats=[];
+  for(var f=1;f<=27;f++){
+    var isRef=RF.indexOf(f)!==-1;
+    for(var p=0;p<STD.length;p++){
+      var s=STD[p];
+      var flatNo=f*100+(p+1);
+      // On refuge floors, positions 03 & 08 become 1.5 BHK
+      if(isRef && (s.pos==='03'||s.pos==='08')){
+        flats.push({no:flatNo,type:'1.5 BHK (Refuge)',sq:821,floor:f,pk:'1 Covered Parking',ref:true});
+      }else{
+        flats.push({no:flatNo,type:s.type,sq:s.sq,floor:f,pk:s.pk,ref:false});
+      }
+    }
+  }
+  D.B7.flats=flats;
+})();
+
+var SD=7,GST=5,REG=30000,SCAN=10000,BOOK=10;
+
+/* Load rates from backend API (with localStorage fallback) */
+var API_BASE=''; // Same origin
+
+// Supabase client (uses anon key — frontend only)
+var _supabase = supabase.createClient(
+    'https://whlnfvaybsipcgajaqei.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobG5mdmF5YnNpcGNnYWphcWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NTgzNzgsImV4cCI6MjA4NzIzNDM3OH0.yC5yDr_xeycs1m14dPwojOwb7xFhd9pqXYDGbX_Ki5w'
+);
+
+// Single unified session
+var AUTH_TOKEN='';
+var AUTH_USER='';
+var AUTH_ROLE='';
+var AUTH_PERMS=''; // comma-separated permissions string
+
+function hasPerm(p){ return AUTH_ROLE==='superadmin' || (','+AUTH_PERMS+',').indexOf(','+p+',')!==-1; }
+function hasAnyPerm(feature){
+  if(AUTH_ROLE==='superadmin') return true;
+  var perms=AUTH_PERMS.split(',');
+  for(var i=0;i<perms.length;i++){if(perms[i].trim().indexOf(feature+'.')===0) return true;}
+  return false;
+}
+
+function api(method,url,body){
+  var opts={method:method,headers:{'Content-Type':'application/json'}};
+  if(AUTH_TOKEN) opts.headers['Authorization']='Bearer '+AUTH_TOKEN;
+  if(body) opts.body=JSON.stringify(body);
+  return fetch(API_BASE+url,opts).then(function(r){
+    if(r.status===401){
+      // Try to refresh the Supabase session
+      return _supabase.auth.refreshSession().then(function(ref){
+        if(ref.data && ref.data.session){
+          AUTH_TOKEN=ref.data.session.access_token;
+          sessionStorage.setItem('ggc_token',AUTH_TOKEN);
+          // Retry the request with new token
+          opts.headers['Authorization']='Bearer '+AUTH_TOKEN;
+          return fetch(API_BASE+url,opts).then(function(r2){
+            if(r2.status===401) throw new Error('Session expired');
+            return r2.json();
+          });
+        } else {
+          // Refresh failed — full logout
+          AUTH_TOKEN='';AUTH_USER='';AUTH_ROLE='';AUTH_PERMS='';
+          sessionStorage.removeItem('ggc_token');
+          sessionStorage.removeItem('ggc_name');
+          sessionStorage.removeItem('ggc_role');
+          sessionStorage.removeItem('ggc_perms');
+          isAdmin=false;isBfLoggedIn=false;
+          updateLoginUI();
+          throw new Error('Session expired. Please login again.');
+        }
+      });
+    }
+    if(r.status===403){
+      return r.json().then(function(data){
+        data._forbidden=true;
+        return data;
+      });
+    }
+    if(r.status===409){
+      return r.json().then(function(data){
+        data._isDuplicate=true;
+        return data;
+      });
+    }
+    if(r.status===400){
+      return r.json().then(function(data){
+        data._badRequest=true;
+        return data;
+      });
+    }
+    if(r.status>=500){
+      throw new Error('Server error ('+r.status+'). Please try again.');
+    }
+    return r.json();
+  });
+}
+
+function showDuplicateAlert(data){
+  var msg='⚠️ DUPLICATE DETECTED!\n\n';
+  if(data.duplicates&&data.duplicates.length){
+    data.duplicates.forEach(function(d){msg+='• '+d+'\n';});
+  }
+  msg+='\nPlease check existing records.';
+  alert(msg);
+}
+
+(function loadSavedRates(){
+  // Try backend first, fallback to localStorage
+  fetch(API_BASE+'/api/rates').then(function(r){return r.json();}).then(function(data){
+    Object.keys(data).forEach(function(bk){
+      if(D[bk]&&data[bk].base&&data[bk].base>0){
+        D[bk].base=data[bk].base;
+      }
+    });
+    go(); // Refresh with server rates
+  }).catch(function(){
+    // Fallback to localStorage if server unavailable
+    try{
+      var saved=localStorage.getItem('ggc_admin_rates');
+      if(saved){
+        var data=JSON.parse(saved);
+        Object.keys(data).forEach(function(bk){
+          if(D[bk]&&data[bk].base&&data[bk].base>0){
+            D[bk].base=data[bk].base;
+          }
+        });
+      }
+    }catch(e){}
+  });
+})();
+
+var S={bld:'B5',sf:1,su:0,fi:0,ft:'',ff:0}; // fi=flat index, ft=filter type (''=all), ff=filter floor (0=all)
+var SC=['#d1d5db','#9ca3af','#6b7280','#4b5563','#374151'];
+var isAdmin=false;
+var isBfLoggedIn=false;
+var currentTab='cs'; // 'cs' = Cost Sheet, 'bf' = Booking Form, 'cust' = Customers, 'cp' = Channel Partners, 'inv' = Inventory
+var editingBookingId=null;
+var allCustomers=[];
+var allCPs=[];
+
+/* Restore session from sessionStorage */
+(function restoreSession(){
+  var tk=sessionStorage.getItem('ggc_token');
+  var nm=sessionStorage.getItem('ggc_name');
+  var rl=sessionStorage.getItem('ggc_role');
+  var pm=sessionStorage.getItem('ggc_perms');
+  if(tk){
+    AUTH_TOKEN=tk;
+    AUTH_USER=nm||'User';
+    AUTH_ROLE=rl||'';
+    AUTH_PERMS=pm||'';
+    if(hasAnyPerm('rates')||hasAnyPerm('users')) isAdmin=true;
+    if(hasAnyPerm('customers')||hasAnyPerm('bookings')||hasAnyPerm('channel_partners')||hasAnyPerm('inventory')) isBfLoggedIn=true;
+    // Verify token is still valid via /api/me
+    setTimeout(function(){
+      api('GET','/api/me').then(function(profile){
+        if(profile&&!profile.error){
+          AUTH_USER=profile.name||AUTH_USER;
+          AUTH_ROLE=profile.role||AUTH_ROLE;
+          AUTH_PERMS=profile.permissions||AUTH_PERMS;
+          sessionStorage.setItem('ggc_name',AUTH_USER);
+          sessionStorage.setItem('ggc_role',AUTH_ROLE);
+          sessionStorage.setItem('ggc_perms',AUTH_PERMS);
+          if(hasAnyPerm('rates')||hasAnyPerm('users')) isAdmin=true;
+          if(hasAnyPerm('customers')||hasAnyPerm('bookings')||hasAnyPerm('channel_partners')||hasAnyPerm('inventory')) isBfLoggedIn=true;
+        }
+        updateLoginUI();
+      }).catch(function(){
+        // Token invalid — clear session
+        AUTH_TOKEN='';AUTH_USER='';AUTH_ROLE='';AUTH_PERMS='';
+        isAdmin=false;isBfLoggedIn=false;
+        sessionStorage.removeItem('ggc_token');
+        sessionStorage.removeItem('ggc_name');
+        sessionStorage.removeItem('ggc_role');
+        sessionStorage.removeItem('ggc_perms');
+        updateLoginUI();
+      });
+    },100);
+  }
+  if(AUTH_TOKEN){
+    setTimeout(function(){updateLoginUI();},50);
+  }
+})();
+
+/* ============================================================
+   COST SHEET LOGIC (unchanged)
+   ============================================================ */
+function slabRate(base,si){ return base + (si * FLOOR_RISE); }
+
+function getRates(bKey){
+  var b=D[bKey]; var r={};
+  for(var i=0;i<SLABS.length;i++) r[SLABS[i].k]=slabRate(b.base,i);
+  return r;
+}
+
+function calcTP(rate,sqft){ return Math.ceil(rate*sqft*112/100000)*1000; }
+
+function getTP(bKey,ui,floor){
+  var b=D[bKey]; var u=b.units[ui];
+  var si=floorToSlabIdx(floor);
+  var rate=slabRate(b.base,si);
+  return calcTP(rate,u.sq);
+}
+
+function floorToSlabIdx(f){
+  for(var i=0;i<SLABS.length;i++){
+    if(f>=SLABS[i].a&&f<=SLABS[i].b) return i;
+  }
+  return 0;
+}
+
+function sl(f){return SLABS[floorToSlabIdx(f)];}
+
+function f$(n){if(n==null||isNaN(n))return'\u20B90';var s=Math.round(Math.abs(n)).toString(),r='',c=0;for(var i=s.length-1;i>=0;i--){c++;r=s[i]+r;if(i>0){if(c===3&&s.length>3)r=','+r;else if(c>3&&(c-3)%2===0)r=','+r;}}return(n<0?'-':'')+'\u20B9'+r;}
+function fL(n){if(!n)return'';var l=n/1e5;return l>=100?'\u20B9'+(l/100).toFixed(2)+' Cr':'\u20B9'+l.toFixed(2)+' L';}
+function fComma(n){if(n==null||isNaN(n))return'0';var s=Math.round(Math.abs(n)).toString(),r='',c=0;for(var i=s.length-1;i>=0;i--){c++;r=s[i]+r;if(i>0){if(c===3&&s.length>3)r=','+r;else if(c>3&&(c-3)%2===0)r=','+r;}}return(n<0?'-':'')+r;}
+
+function calc(bKey,ui,f){
+  var t=getTP(bKey,ui,f);
+  var av=t/1.12;
+  return{tp:t,av:av,sd:av*(SD/100),gs:av*(GST/100),reg:REG,scn:SCAN,gt:t+REG+SCAN};
+}
+
+/* Calculate for a flat directly (for buildings with flat inventory) */
+function calcFlat(bKey,flatObj){
+  var b=D[bKey];
+  var si=floorToSlabIdx(flatObj.floor);
+  var rate=slabRate(b.base,si);
+  var t=calcTP(rate,flatObj.sq);
+  var av=t/1.12;
+  return{tp:t,av:av,sd:av*(SD/100),gs:av*(GST/100),reg:REG,scn:SCAN,gt:t+REG+SCAN,rate:rate};
+}
+
+function go(){
+  var te=document.getElementById('tabs');te.innerHTML='';
+  Object.keys(D).forEach(function(k){
+    var bt=document.createElement('button');
+    bt.className='tab'+(S.bld===k?' on':'');
+    bt.textContent=D[k].name;
+    bt.onclick=function(){S.bld=k;S.su=0;S.sf=1;S.fi=0;S.ft='';S.ff=0;go();};
+    te.appendChild(bt);
+  });
+
+  var b=D[S.bld];
+  var hasFlats=b.flats&&b.flats.length>0;
+  var ts=document.getElementById('tSel');
+  var fs=document.getElementById('fSel');
+  var us=document.getElementById('uSel');
+
+  // Variables for current selection
+  var selFlat,selUnit,selFloor,selSq,selPk,selType,c;
+
+  if(hasFlats){
+    /* === B7 MODE: 3 cascading dropdowns (Type → Floor → Flat) === */
+    ts.style.display='';
+    fs.style.display='';
+    us.style.display='';
+
+    // 1) TYPE dropdown
+    var types=[];
+    b.flats.forEach(function(fl){if(types.indexOf(fl.type)===-1)types.push(fl.type);});
+    ts.innerHTML='';
+    var oAll=document.createElement('option');oAll.value='';oAll.textContent='All Flat Types';oAll.selected=S.ft==='';ts.appendChild(oAll);
+    types.forEach(function(t){var o=document.createElement('option');o.value=t;o.textContent=t;o.selected=t===S.ft;ts.appendChild(o);});
+    ts.onchange=function(){S.ft=this.value;S.ff=0;S.fi=0;go();};
+
+    // 2) Filter flats by selected type
+    var typeFiltered=S.ft?b.flats.filter(function(fl){return fl.type===S.ft;}):b.flats;
+
+    // 3) FLOOR dropdown — only floors present in typeFiltered
+    var floors=[];
+    typeFiltered.forEach(function(fl){if(floors.indexOf(fl.floor)===-1)floors.push(fl.floor);});
+    floors.sort(function(a,b){return a-b;});
+    fs.innerHTML='';
+    var oAllF=document.createElement('option');oAllF.value='0';oAllF.textContent='All Floors';oAllF.selected=S.ff===0;fs.appendChild(oAllF);
+    floors.forEach(function(f){var o=document.createElement('option');o.value=f;o.textContent='Floor '+f;o.selected=f===S.ff;fs.appendChild(o);});
+    fs.onchange=function(){S.ff=+this.value;S.fi=0;go();};
+
+    // 4) Filter further by floor
+    var filtered=S.ff?typeFiltered.filter(function(fl){return fl.floor===S.ff;}):typeFiltered;
+
+    // 5) FLAT dropdown — show filtered flats
+    us.innerHTML='';
+    var foundCurrent=false;
+    filtered.forEach(function(flat){
+      var idx=b.flats.indexOf(flat);
+      var o=document.createElement('option');
+      o.value=idx;
+      o.textContent='Flat '+flat.no+' \u2014 '+flat.type+' ('+flat.sq+' sqft)';
+      if(idx===S.fi){o.selected=true;foundCurrent=true;}
+      us.appendChild(o);
+    });
+    // If current selection not in filtered list, select first
+    if(!foundCurrent&&filtered.length>0){
+      S.fi=b.flats.indexOf(filtered[0]);
+      us.firstChild.selected=true;
+    }
+    us.onchange=function(){S.fi=+this.value;go();};
+
+    selFlat=b.flats[S.fi]||b.flats[0];
+    selFloor=selFlat.floor;
+    selSq=selFlat.sq;
+    selPk=selFlat.pk;
+    selType=selFlat.type;
+    c=calcFlat(S.bld,selFlat);
+  }else{
+    /* === B5 MODE: Unit type + floor selector (2 dropdowns) === */
+    ts.style.display='none'; // Hide type filter for B5
+
+    us.innerHTML='';
+    b.units.forEach(function(u,i){var o=document.createElement('option');o.value=i;o.textContent=u.n+' ('+u.sq+' sqft)';o.selected=i===S.su;us.appendChild(o);});
+    us.onchange=function(){S.su=+this.value;go();};
+
+    fs.style.display='';
+    fs.innerHTML='';
+    for(var f=1;f<=27;f++){var s=sl(f);var o=document.createElement('option');o.value=f;o.textContent='Floor '+f+' \u2014 '+s.l;o.selected=f===S.sf;fs.appendChild(o);}
+    fs.onchange=function(){S.sf=+this.value;go();};
+
+    selUnit=b.units[S.su]||b.units[0];
+    selFloor=S.sf;
+    selSq=selUnit.sq;
+    selPk=selUnit.pk;
+    selType=selUnit.n;
+    c=calc(S.bld,S.su,S.sf);
+  }
+
+  var h='';
+
+  // Print header
+  h+='<div class="card print-show" style="display:none;margin-bottom:12px"><div style="padding:16px;background:var(--primary);display:flex;align-items:center;gap:12px"><img src="'+document.getElementById('logo').src+'" style="height:36px"><div style="flex:1"><div style="color:#fff;font-size:14px;font-weight:700">Ganga Legend County</div><div style="color:var(--accent);font-size:10px">FIXED PRICE | RERA: '+b.rera+'</div></div><div style="color:rgba(255,255,255,.6);font-size:10px">'+new Date().toLocaleDateString('en-IN')+'</div></div></div>';
+
+  // Unit type chips (summary by type)
+  h+='<div style="margin:0 -16px 12px"><div class="chips">';
+  if(hasFlats){
+    // Show unique unit types as chips with price for current floor
+    var si=floorToSlabIdx(selFloor);
+    var rate=slabRate(b.base,si);
+    b.units.forEach(function(unit,i){
+      var p=calcTP(rate,unit.sq);
+      var on=selType===unit.n||(selType.indexOf(unit.n)===0);
+      h+='<div class="chip'+(on?' on':'')+'" style="cursor:default"><div class="chip-n">'+unit.n+'</div><div class="chip-a">'+unit.sq+' sqft</div><div class="chip-p">'+f$(p)+'</div><div class="chip-l">'+fL(p)+'</div></div>';
+    });
+  }else{
+    b.units.forEach(function(unit,i){
+      var p=getTP(S.bld,i,S.sf),on=i===S.su;
+      h+='<div class="chip'+(on?' on':'')+'" onclick="S.su='+i+';go()"><div class="chip-n">'+unit.n+'</div><div class="chip-a">'+unit.sq+' sqft</div><div class="chip-p">'+f$(p)+'</div><div class="chip-l">'+fL(p)+'</div></div>';
+    });
+  }
+  h+='</div></div>';
+
+  // Selected flat badge
+  var badge=hasFlats?'Flat '+selFlat.no+' | '+selType+' | Floor '+selFloor:selType+' | Floor '+selFloor;
+
+  // Cost breakdown
+  h+='<div class="card"><div class="card-h"><h3>Cost Breakdown</h3><span class="badge">'+badge+'</span></div>';
+  h+='<div class="row"><div class="row-l"><div class="row-t">Total Package</div><div class="row-s">Inclusive of Stamp Duty & GST</div></div><div><div class="row-a">'+f$(c.tp)+'</div><div class="row-lk">'+fL(c.tp)+'</div></div></div>';
+  h+='<div class="row sub"><div class="row-l"><div class="row-t">Agreement Value</div></div><div><div class="row-a">'+f$(c.av)+'</div></div></div>';
+  h+='<div class="row sub"><div class="row-l"><div class="row-t">Stamp Duty @ '+SD+'%</div></div><div><div class="row-a">'+f$(c.sd)+'</div></div></div>';
+  h+='<div class="row sub"><div class="row-l"><div class="row-t">GST @ '+GST+'%</div></div><div><div class="row-a">'+f$(c.gs)+'</div></div></div>';
+  h+='<div class="row"><div class="row-l"><div class="row-t">Registration</div><div class="row-s">Fixed</div></div><div><div class="row-a">'+f$(c.reg)+'</div></div></div>';
+  h+='<div class="row"><div class="row-l"><div class="row-t">Scanning & Documentation</div><div class="row-s">Fixed</div></div><div><div class="row-a">'+f$(c.scn)+'</div></div></div>';
+  h+='<div class="row tot"><div class="row-l"><div class="row-t">Grand Total</div></div><div><div class="row-a">'+f$(c.gt)+'</div><div class="row-lk">'+fL(c.gt)+'</div></div></div>';
+  h+='</div>';
+
+  // Info
+  h+='<div class="card">';
+  if(hasFlats) h+='<div class="info"><div class="info-i g">F</div><div><div class="info-lb">Flat Number</div><div class="info-v">Flat '+selFlat.no+'</div></div></div>';
+  h+='<div class="info"><div class="info-i g">P</div><div><div class="info-lb">Parking</div><div class="info-v">'+selPk+'</div></div></div>';
+  h+='<div class="info"><div class="info-i g">R</div><div><div class="info-lb">RERA Number</div><div class="info-v">'+b.rera+'</div></div></div>';
+  h+='<div class="info"><div class="info-i g">B</div><div><div class="info-lb">Booking Amount</div><div class="info-v">'+BOOK+'% of Agreement Value ('+f$(c.av*(BOOK/100))+')</div></div></div>';
+  h+='</div>';
+
+  // Floor-wise pricing (show for selected unit type's sqft)
+  h+='<div class="card"><div class="card-h"><h3>Floor-wise Pricing</h3><span class="badge">'+selType+' ('+selSq+' sqft)</span></div>';
+  SLABS.forEach(function(s,i){
+    var rate=slabRate(b.base,i);
+    var p=calcTP(rate,selSq);
+    var on=selFloor>=s.a&&selFloor<=s.b;
+    h+='<div class="slab" style="'+(on?'background:#f0f7ff':'')+'"><div><div class="slab-f"><span class="slab-d" style="background:'+SC[i]+'"></span>'+s.l+'</div><div class="slab-r">'+f$(rate)+'/sqft</div></div><div><div class="slab-p">'+f$(p)+'</div><div class="slab-l">'+fL(p)+'</div></div></div>';
+  });
+  h+='</div>';
+
+  document.getElementById('out').innerHTML=h;
+}
+
+/* ============================================================
+   MAIN TAB SWITCHING
+   ============================================================ */
+function switchMainTab(tab){
+  var tabPerms={cust:'customers.view',bf:'bookings.view',cp:'channel_partners.view',inv:'inventory.view'};
+  // All tabs except cost sheet require login
+  if(tab!=='cs'&&!AUTH_TOKEN){
+    document.getElementById('adm-user').value='';
+    document.getElementById('adm-pass').value='';
+    document.getElementById('loginErr').style.display='none';
+    document.getElementById('loginModal').classList.add('show');
+    window._pendingTab=tab;
+    return;
+  }
+  // Admin tab: needs rates or users permission
+  if(tab==='admin'&&!hasAnyPerm('rates')&&!hasAnyPerm('users')){
+    showToast('Access denied');return;
+  }
+  // CRM tabs: need specific .view permission
+  if(tab!=='cs'&&tab!=='admin'&&tabPerms[tab]&&!hasPerm(tabPerms[tab])){
+    showToast('Access denied: you don\'t have permission for this tab');return;
+  }
+  currentTab=tab;
+  ['cs','cust','bf','cp','inv','admin'].forEach(function(t){
+    var btn=document.getElementById('mtab-'+t);
+    if(btn) btn.className='main-tab'+(tab===t?' on':'');
+  });
+  document.getElementById('section-cs').style.display=tab==='cs'?'':'none';
+  document.getElementById('section-cust').className='cust-wrap'+(tab==='cust'?' show':'');
+  document.getElementById('section-bf').className='bf-wrap'+(tab==='bf'?' show':'');
+  document.getElementById('section-cp').className='cp-wrap'+(tab==='cp'?' show':'');
+  document.getElementById('section-inv').className='inv-wrap'+(tab==='inv'?' show':'');
+  document.getElementById('section-admin').className='admin-wrap'+(tab==='admin'?' show':'');
+  // Hide/show action buttons based on granular permissions
+  var cb=document.getElementById('custAddBtn');
+  if(cb) cb.style.display=hasPerm('customers.add')?'':'none';
+  var bb=document.getElementById('bookingAddBtn');
+  if(bb) bb.style.display=hasPerm('bookings.add')?'':'none';
+  var cpb=document.getElementById('cpAddBtn');
+  if(cpb) cpb.style.display=hasPerm('channel_partners.add')?'':'none';
+
+  if(tab==='cust') loadCustomers();
+  if(tab==='bf') {loadCustomersForSelect();loadCPsForSelect();renderBookingList();}
+  if(tab==='cp') loadCPs();
+  if(tab==='inv') renderInventory();
+  if(tab==='admin') showAdminPanel();
+}
+
+function updateLoginUI(){
+  var bar=document.getElementById('userBar');
+  var loginBtn=document.getElementById('hdrLoginBtn');
+  var loginLabel=document.getElementById('hdrLoginLabel');
+  var tabPerms={cust:'customers.view',bf:'bookings.view',cp:'channel_partners.view',inv:'inventory.view'};
+
+  if(AUTH_TOKEN){
+    bar.classList.add('show');
+    document.getElementById('userBarName').textContent=AUTH_USER||'User';
+    // Show/hide CRM tabs based on .view permissions
+    Object.keys(tabPerms).forEach(function(t){
+      document.getElementById('mtab-'+t).style.display=hasPerm(tabPerms[t])?'':'none';
+    });
+    // Show admin tab if user has rates or users perms
+    document.getElementById('mtab-admin').style.display=(hasAnyPerm('rates')||hasAnyPerm('users'))?'':'none';
+    // Update login button to show logged-in state
+    loginBtn.className='hdr-login-btn crm-active';
+    loginLabel.textContent=AUTH_USER||'User';
+  }else{
+    bar.classList.remove('show');
+    Object.keys(tabPerms).forEach(function(t){document.getElementById('mtab-'+t).style.display='none';});
+    document.getElementById('mtab-admin').style.display='none';
+    if(currentTab!=='cs') switchMainTab('cs');
+    loginBtn.className='hdr-login-btn';
+    loginLabel.textContent='Login';
+  }
+}
+
+function doLogout(){
+  _supabase.auth.signOut().catch(function(){});
+  AUTH_TOKEN='';AUTH_USER='';AUTH_ROLE='';AUTH_PERMS='';
+  isAdmin=false;isBfLoggedIn=false;
+  sessionStorage.removeItem('ggc_token');
+  sessionStorage.removeItem('ggc_name');
+  sessionStorage.removeItem('ggc_role');
+  sessionStorage.removeItem('ggc_perms');
+  closeModals();
+  updateLoginUI();
+  switchMainTab('cs');
+  showToast('Logged out');
+}
+
+/* ============================================================
+   BOOKING FORM LOGIC
+   ============================================================ */
+
+// All booking form field IDs
+var BF_FIELDS = [
+  // Page 1 - Application
+  'bf_appDate','bf_amount','bf_chequeNo','bf_amtFig','bf_drawnOn',
+  // Applicant 1
+  'bf_app1Name','bf_app1Dob','bf_app1Phone','bf_app1Email','bf_app1Pan','bf_app1Aadhar','bf_app1Addr','bf_app1Sector','bf_app1Company',
+  // Applicant 2
+  'bf_app2Name','bf_app2Dob','bf_app2Phone','bf_app2Email','bf_app2Pan','bf_app2Aadhar',
+  // NRI
+  'bf_nriCountry','bf_nriEmail','bf_nriBank','bf_nriBranch','bf_nriPda',
+  // Sales
+  'bf_salesPerson','bf_siteHead','bf_remarks',
+  // Page 2 - Project (auto-filled)
+  'bf_projName','bf_projTower','bf_projFlatNo','bf_projFlat','bf_projFloor','bf_projCarpet','bf_projParking',
+  'bf_discount','bf_origTP','bf_projTP','bf_projAV','bf_projSD','bf_projGST','bf_projReg','bf_projGT','bf_projBookAmt',
+  'bf_projValue','bf_projRera',
+  // Company
+  'bf_compName','bf_compProp','bf_compPan','bf_compContact','bf_compAddr','bf_compMobile','bf_compEmail',
+  // Signatories
+  'bf_sig1Name','bf_sig1Dob','bf_sig1Aadhar','bf_sig1Pan','bf_sig2Name','bf_sig2Dob','bf_sig2Aadhar','bf_sig2Pan',
+  // Loan
+  'bf_loanBank','bf_loanContact','bf_loanOwn','bf_loanAmt',
+  // Source other
+  'bf_srcOther',
+  // Channel Partner
+  'bf_cpName','bf_cpPerson','bf_cpMobile','bf_cpLandline','bf_cpEmail','bf_cpRera'
+];
+
+var BF_CHECKBOXES = ['bf_chkPhoto','bf_chkPassport','bf_chkAddr','bf_chkPan','bf_chkOCI','bf_chkEntity',
+  'bf_srcNewspaper','bf_srcHoarding','bf_srcWebsite','bf_srcMagazine','bf_srcEmail','bf_srcSMS',
+  'bf_srcRef','bf_srcCP','bf_srcExisting','bf_srcPassby','bf_srcExhibition'];
+
+var BF_RADIOS = ['bf_app1Prof','bf_app1Corr','bf_app1Status','bf_loanOpt'];
+
+function toggleLoan(){
+  var v=document.querySelector('input[name="bf_loanOpt"]:checked');
+  document.getElementById('bf_loanFields').style.display=(v&&v.value==='YES')?'block':'none';
+}
+
+/* ── Quick Fill Dropdown Populators ── */
+function populateQuickFillDropdowns(){
+  // Tower dropdown
+  var towerSel=document.getElementById('bf_selTower');
+  towerSel.innerHTML='<option value="">-- Select Tower --</option>';
+  Object.keys(D).forEach(function(bk){
+    var opt=document.createElement('option');
+    opt.value=bk;
+    opt.textContent=D[bk].name;
+    if(bk===S.bld) opt.selected=true;
+    towerSel.appendChild(opt);
+  });
+
+  // Populate flat dropdown based on current tower
+  populateFlatDropdown();
+
+  // Sales staff + Site Head dropdowns
+  api('GET','/api/sales-staff').then(function(staff){
+    allSalesStaff=staff||[];
+    var salesSel=document.getElementById('bf_selSales');
+    var headSel=document.getElementById('bf_selSiteHead');
+    salesSel.innerHTML='<option value="">-- Select Sales Person --</option>';
+    headSel.innerHTML='<option value="">-- Select Site Head --</option>';
+    staff.forEach(function(s){
+      var opt1=document.createElement('option');
+      opt1.value=s.name;
+      opt1.textContent=s.name+(s.phone?' ('+s.phone+')':'');
+      salesSel.appendChild(opt1);
+      var opt2=document.createElement('option');
+      opt2.value=s.name;
+      opt2.textContent=s.name+(s.phone?' ('+s.phone+')':'');
+      headSel.appendChild(opt2);
+    });
+    // Pre-select if already filled
+    var existVal=document.getElementById('bf_salesPerson').value;
+    if(existVal) salesSel.value=existVal;
+    var existHead=document.getElementById('bf_siteHead').value;
+    if(existHead) headSel.value=existHead;
+  }).catch(function(){});
+}
+
+function populateFlatDropdown(){
+  var towerKey=document.getElementById('bf_selTower').value||S.bld;
+  var b=D[towerKey];
+  var flatSel=document.getElementById('bf_selFlat');
+  flatSel.innerHTML='<option value="">-- Select Flat --</option>';
+  if(b.flats&&b.flats.length>0){
+    // B7 — has individual flat inventory
+    // Get sold flats to mark them
+    api('GET','/api/inventory').then(function(sold){
+      var soldNos={};
+      Object.keys(sold).forEach(function(k){if(sold[k].flat_no)soldNos[sold[k].flat_no]=sold[k].buyer||'Booked';});
+      b.flats.forEach(function(fl,idx){
+        var opt=document.createElement('option');
+        opt.value=idx;
+        var label='Flat '+fl.no+' (Floor '+fl.floor+', '+fl.type+', '+fl.sq+' sqft)';
+        if(soldNos[fl.no]){
+          label+=' — SOLD';
+          opt.style.color='#c62828';
+          opt.disabled=true;
+        }
+        opt.textContent=label;
+        if(idx===S.fi) opt.selected=true;
+        flatSel.appendChild(opt);
+      });
+    }).catch(function(){
+      b.flats.forEach(function(fl,idx){
+        var opt=document.createElement('option');
+        opt.value=idx;
+        opt.textContent='Flat '+fl.no+' (Floor '+fl.floor+', '+fl.type+', '+fl.sq+' sqft)';
+        if(idx===S.fi) opt.selected=true;
+        flatSel.appendChild(opt);
+      });
+    });
+  }else{
+    // B5 — unit type based, show unit types as options
+    b.units.forEach(function(u,idx){
+      var opt=document.createElement('option');
+      opt.value=idx;
+      opt.textContent=u.n+' ('+u.sq+' sqft, '+u.pk+')';
+      if(idx===S.su) opt.selected=true;
+      flatSel.appendChild(opt);
+    });
+  }
+}
+
+function onTowerSelect(){
+  var towerKey=document.getElementById('bf_selTower').value;
+  if(!towerKey) return;
+  S.bld=towerKey;
+  S.fi=0;S.su=0;S.sf=1;
+  populateFlatDropdown();
+  autoFillProjectDetails();
+}
+
+function onFlatSelect(){
+  var flatSel=document.getElementById('bf_selFlat');
+  var idx=parseInt(flatSel.value);
+  if(isNaN(idx)) return;
+  var b=D[S.bld];
+  if(b.flats&&b.flats.length>0){
+    S.fi=idx;
+  }else{
+    S.su=idx;
+  }
+  autoFillProjectDetails();
+}
+
+function onSalesSelect(){
+  var val=document.getElementById('bf_selSales').value;
+  document.getElementById('bf_salesPerson').value=val;
+}
+
+function onSiteHeadSelect(){
+  var val=document.getElementById('bf_selSiteHead').value;
+  document.getElementById('bf_siteHead').value=val;
+}
+
+function autoFillProjectDetails(){
+  var b=D[S.bld];
+  var hasFlats=b.flats&&b.flats.length>0;
+  var c,selFlat,selType,selFloor,selSq,selPk;
+
+  if(hasFlats){
+    // B7 mode: use flat inventory
+    selFlat=b.flats[S.fi]||b.flats[0];
+    selType=selFlat.type;
+    selFloor=selFlat.floor;
+    selSq=selFlat.sq;
+    selPk=selFlat.pk;
+    c=calcFlat(S.bld,selFlat);
+  }else{
+    // B5 mode: use unit type + floor
+    var u=b.units[S.su]||b.units[0];
+    selType=u.n;
+    selFloor=S.sf;
+    selSq=u.sq;
+    selPk=u.pk;
+    c=calc(S.bld,S.su,S.sf);
+  }
+
+  // Project details from cost sheet
+  document.getElementById('bf_projTower').value=b.name;
+  document.getElementById('bf_projFlatNo').value=hasFlats?'Flat '+selFlat.no:'—';
+  document.getElementById('bf_projFlat').value=selType;
+  document.getElementById('bf_projFloor').value='Floor '+selFloor;
+  document.getElementById('bf_projCarpet').value=selSq+' sq.ft.';
+  document.getElementById('bf_projParking').value=selPk;
+  document.getElementById('bf_projValue').value=f$(c.av)+' ('+fL(c.av)+')';
+  document.getElementById('bf_projRera').value=b.rera;
+
+  // Auto-fill booking amount as 10% of AV
+  var bookAmt=Math.round(c.av*(BOOK/100));
+  if(!document.getElementById('bf_amount').value){
+    document.getElementById('bf_amount').value=f$(bookAmt);
+    document.getElementById('bf_amtFig').value=bookAmt;
+  }
+
+  // Auto-fill cost breakdown summary
+  document.getElementById('bf_projTP').value=f$(c.tp)+' ('+fL(c.tp)+')';
+  document.getElementById('bf_projAV').value=f$(c.av)+' ('+fL(c.av)+')';
+  document.getElementById('bf_projSD').value=f$(c.sd)+' (SD '+SD+'%)';
+  document.getElementById('bf_projGST').value=f$(c.gs)+' (GST '+GST+'%)';
+  document.getElementById('bf_projReg').value=f$(c.reg);
+  document.getElementById('bf_projGT').value=f$(c.gt)+' ('+fL(c.gt)+')';
+  document.getElementById('bf_projBookAmt').value=f$(Math.round(c.av*(BOOK/100)))+' ('+BOOK+'% of AV)';
+
+  // Store original TP for discount calculations
+  var tpEl=document.getElementById('bf_projTP');
+  tpEl.dataset.origTp=c.tp;
+  tpEl.dataset.origAv=c.av;
+  document.getElementById('bf_origTP').value=f$(c.tp)+' ('+fL(c.tp)+')';
+
+  // Apply discount if already entered (e.g. loading saved booking)
+  applyDiscount();
+}
+
+/* Discount on Total Package — max 5,00,000 */
+var MAX_DISCOUNT=500000;
+
+function applyDiscount(){
+  var tpEl=document.getElementById('bf_projTP');
+  var origTP=parseFloat(tpEl.dataset.origTp)||0;
+  if(!origTP) return; // No original TP yet
+
+  var discEl=document.getElementById('bf_discount');
+  var raw=discEl.value.replace(/[^\d]/g,'');
+  var disc=parseInt(raw,10)||0;
+
+  // Cap at max discount
+  if(disc>MAX_DISCOUNT){
+    disc=MAX_DISCOUNT;
+    discEl.value=disc;
+    showToast('Maximum discount is '+f$(MAX_DISCOUNT));
+  }
+  // Cap at TP (can't discount more than total)
+  if(disc>origTP){
+    disc=Math.round(origTP);
+    discEl.value=disc;
+    showToast('Discount cannot exceed Total Package');
+  }
+
+  // Recalculate
+  var newTP=origTP-disc;
+  var newAV=newTP/1.12;
+  var newSD=newAV*(SD/100);
+  var newGST=newAV*(GST/100);
+  var newGT=newTP+REG+SCAN;
+  var newBookAmt=Math.round(newAV*(BOOK/100));
+
+  // Update all cost fields
+  tpEl.value=f$(newTP)+' ('+fL(newTP)+')';
+  document.getElementById('bf_projAV').value=f$(newAV)+' ('+fL(newAV)+')';
+  document.getElementById('bf_projSD').value=f$(newSD)+' (SD '+SD+'%)';
+  document.getElementById('bf_projGST').value=f$(newGST)+' (GST '+GST+'%)';
+  document.getElementById('bf_projReg').value=f$(REG);
+  document.getElementById('bf_projGT').value=f$(newGT)+' ('+fL(newGT)+')';
+  document.getElementById('bf_projBookAmt').value=f$(newBookAmt)+' ('+BOOK+'% of AV)';
+  document.getElementById('bf_projValue').value=f$(newAV)+' ('+fL(newAV)+')';
+
+  // Update original TP display
+  document.getElementById('bf_origTP').value=f$(origTP)+' ('+fL(origTP)+')';
+
+  // Show discount label
+  var lbl=document.getElementById('bf_discLabel');
+  if(disc>0){
+    lbl.textContent='(After '+f$(disc)+' discount)';
+  }else{
+    lbl.textContent='';
+  }
+
+  // Update booking amount fields (Page 1) if not manually edited
+  var amtEl=document.getElementById('bf_amount');
+  if(!amtEl.dataset.manualEdit){
+    amtEl.value=f$(newBookAmt);
+    document.getElementById('bf_amtFig').value=newBookAmt;
+  }
+}
+
+/* Auto-sync: Applicant 1 data flows to Page 2 fields automatically */
+function setupAutoSync(){
+  // Applicant 1 Name → Signatory 1 Name
+  syncField('bf_app1Name','bf_sig1Name');
+  // Applicant 1 DOB → Signatory 1 DOB
+  syncField('bf_app1Dob','bf_sig1Dob');
+  // Applicant 1 PAN → Signatory 1 PAN
+  syncField('bf_app1Pan','bf_sig1Pan');
+  // Applicant 1 Aadhar → Signatory 1 Aadhar
+  syncField('bf_app1Aadhar','bf_sig1Aadhar');
+
+  // Applicant 2 → Signatory 2
+  syncField('bf_app2Name','bf_sig2Name');
+  syncField('bf_app2Dob','bf_sig2Dob');
+  syncField('bf_app2Pan','bf_sig2Pan');
+  syncField('bf_app2Aadhar','bf_sig2Aadhar');
+
+  // Applicant 1 Company → Company Name (Page 2)
+  syncField('bf_app1Company','bf_compName');
+  // Applicant 1 Phone → Company Mobile
+  syncField('bf_app1Phone','bf_compMobile');
+  // Applicant 1 Email → Company Email
+  syncField('bf_app1Email','bf_compEmail');
+  // Applicant 1 Name → Company Contact Person
+  syncField('bf_app1Name','bf_compContact');
+
+  // When NRI status selected, auto-fill NRI email from Applicant 1
+  var nriRadios=document.querySelectorAll('input[name="bf_app1Status"]');
+  nriRadios.forEach(function(r){
+    r.addEventListener('change',function(){
+      if(this.value==='Non Resident (NRI/PIO/OCI)'){
+        var email=document.getElementById('bf_app1Email').value;
+        if(email && !document.getElementById('bf_nriEmail').value){
+          document.getElementById('bf_nriEmail').value=email;
+        }
+      }
+    });
+  });
+
+  // Booking Amount → Amount in Figures (keep in sync)
+  document.getElementById('bf_amount').addEventListener('input',function(){
+    var num=this.value.replace(/[^\d]/g,'');
+    if(num) document.getElementById('bf_amtFig').value=num;
+  });
+}
+
+/* Helper: one-way sync from source field to target (only if target is empty or was auto-filled) */
+function syncField(srcId,tgtId){
+  var src=document.getElementById(srcId);
+  var tgt=document.getElementById(tgtId);
+  if(!src||!tgt) return;
+
+  // Track if target was manually edited
+  tgt.dataset.manualEdit='';
+
+  src.addEventListener('input',function(){
+    // Only auto-fill if target hasn't been manually edited to a different value
+    if(!tgt.dataset.manualEdit){
+      tgt.value=src.value;
+    }
+  });
+
+  tgt.addEventListener('input',function(){
+    // If user manually changes target to something different, mark it
+    if(tgt.value!==src.value){
+      tgt.dataset.manualEdit='1';
+    }else{
+      tgt.dataset.manualEdit='';
+    }
+  });
+}
+
+function newBooking(){
+  editingBookingId=null;
+  clearBookingForm();
+  document.getElementById('bfForm').style.display='block';
+
+  // Set today's date
+  var today=new Date().toISOString().split('T')[0];
+  document.getElementById('bf_appDate').value=today;
+
+  // Populate Quick Fill dropdowns
+  populateQuickFillDropdowns();
+
+  // Auto-fill from cost sheet
+  autoFillProjectDetails();
+
+  // Setup auto-sync between fields (enter once, flows everywhere)
+  setupAutoSync();
+
+  // Scroll to form
+  document.getElementById('bfPage1').scrollIntoView({behavior:'smooth'});
+}
+
+function clearBookingForm(){
+  BF_FIELDS.forEach(function(id){
+    var el=document.getElementById(id);
+    if(el){
+      if(el.tagName==='TEXTAREA') el.value='';
+      else el.value='';
+      // Reset auto-sync tracking
+      delete el.dataset.manualEdit;
+    }
+  });
+  BF_CHECKBOXES.forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.checked=false;
+  });
+  BF_RADIOS.forEach(function(name){
+    var radios=document.querySelectorAll('input[name="'+name+'"]');
+    radios.forEach(function(r){r.checked=false;});
+  });
+  // Reset loan to NO
+  var noRadio=document.querySelector('input[name="bf_loanOpt"][value="NO"]');
+  if(noRadio) noRadio.checked=true;
+  toggleLoan();
+}
+
+function collectBookingData(){
+  var data={fields:{},checkboxes:{},radios:{},timestamp:new Date().toISOString()};
+
+  // Store which building/unit/floor/flat was selected
+  data.costSheetSelection={bld:S.bld,su:S.su,sf:S.sf,fi:S.fi,ft:S.ft,ff:S.ff};
+
+  BF_FIELDS.forEach(function(id){
+    var el=document.getElementById(id);
+    data.fields[id]=el?el.value:'';
+  });
+  BF_CHECKBOXES.forEach(function(id){
+    var el=document.getElementById(id);
+    data.checkboxes[id]=el?el.checked:false;
+  });
+  BF_RADIOS.forEach(function(name){
+    var checked=document.querySelector('input[name="'+name+'"]:checked');
+    data.radios[name]=checked?checked.value:'';
+  });
+  return data;
+}
+
+function fillBookingForm(data){
+  // Restore cost sheet selection
+  if(data.costSheetSelection){
+    S.bld=data.costSheetSelection.bld;
+    S.su=data.costSheetSelection.su;
+    S.sf=data.costSheetSelection.sf;
+    if(data.costSheetSelection.fi!==undefined) S.fi=data.costSheetSelection.fi;
+    if(data.costSheetSelection.ft!==undefined) S.ft=data.costSheetSelection.ft;
+    if(data.costSheetSelection.ff!==undefined) S.ff=data.costSheetSelection.ff;
+    go(); // Refresh cost sheet
+  }
+
+  Object.keys(data.fields||{}).forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.value=data.fields[id]||'';
+  });
+  Object.keys(data.checkboxes||{}).forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.checked=!!data.checkboxes[id];
+  });
+  Object.keys(data.radios||{}).forEach(function(name){
+    var val=data.radios[name];
+    if(val){
+      var radio=document.querySelector('input[name="'+name+'"][value="'+val+'"]');
+      if(radio) radio.checked=true;
+    }
+  });
+  toggleLoan();
+
+  // Re-run autoFillProjectDetails to set origTp, then applyDiscount with saved discount
+  var savedDiscount=document.getElementById('bf_discount').value;
+  autoFillProjectDetails();
+  document.getElementById('bf_discount').value=savedDiscount;
+  applyDiscount();
+}
+
+/* ============================================================
+   BOOKING DATA PERSISTENCE (Backend API + localStorage fallback)
+   ============================================================ */
+var cachedBookings=null;
+
+function getBookings(){
+  if(cachedBookings) return cachedBookings;
+  try{
+    var raw=localStorage.getItem('ggc_bookings');
+    return raw?JSON.parse(raw):[];
+  }catch(e){return [];}
+}
+
+function saveBookingsLocal(bookings){
+  cachedBookings=bookings;
+  try{localStorage.setItem('ggc_bookings',JSON.stringify(bookings));}catch(e){}
+}
+
+function saveBooking(){
+  var reqPerm=editingBookingId?'bookings.edit':'bookings.add';
+  if(!hasPerm(reqPerm)){showToast('Access denied: you don\'t have '+reqPerm+' permission');return;}
+
+  // Validate customer is selected
+  var custSelectEl=document.getElementById('bf_custSelect');
+  if(!custSelectEl||!custSelectEl.value){
+    showToast('Please select a customer first');
+    custSelectEl.focus();
+    return;
+  }
+
+  var data=collectBookingData();
+  var name=data.fields['bf_app1Name']||'Unnamed';
+
+  // Build booking payload for API
+  var cpSelectEl=document.getElementById('bf_cpSelect');
+  var payload={
+    customer_id:custSelectEl?parseInt(custSelectEl.value)||null:null,
+    cp_id:cpSelectEl?parseInt(cpSelectEl.value)||null:null,
+    building:S.bld,
+    flat_no:S.bld==='B7'?(D.B7.flats[S.fi]||{}).no:null,
+    flat_type:data.fields['bf_projFlat']||'',
+    floor:parseInt((data.fields['bf_projFloor']||'').replace(/[^\d]/g,''))||0,
+    carpet_area:parseInt((data.fields['bf_projCarpet']||'').replace(/[^\d]/g,''))||0,
+    base_rate:D[S.bld].base,
+    total_package:parseInt((data.fields['bf_projTP']||'').replace(/[^\d₹,]/g,''))||0,
+    discount:parseInt((data.fields['bf_discount']||'').replace(/[^\d]/g,''))||0,
+    booking_amount:parseInt((data.fields['bf_amount']||'').replace(/[^\d₹,]/g,''))||0,
+    payment_mode:data.fields['bf_chequeNo']?'Cheque/Draft/UTR':'',
+    payment_ref:data.fields['bf_chequeNo']||'',
+    sales_person:data.fields['bf_salesPerson']||'',
+    remarks:data.fields['bf_remarks']||'',
+    form_data:data
+  };
+
+  function afterSaveSuccess(){
+    editingBookingId=null;
+    document.getElementById('bfForm').style.display='none';
+    renderBookingList();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  if(editingBookingId!==null && typeof editingBookingId==='number'){
+    // Update existing booking on server
+    api('PUT','/api/bookings/'+editingBookingId,payload).then(function(resp){
+      if(resp._isDuplicate){showDuplicateAlert(resp);return;}
+      if(resp.error){showToast(resp.error);return;}
+      showToast('Booking updated!');
+      afterSaveSuccess();
+    }).catch(function(e){showToast('Error: '+(e.message||'saving'));});
+  }else{
+    // Create new booking on server
+    api('POST','/api/bookings',payload).then(function(resp){
+      if(resp._isDuplicate){showDuplicateAlert(resp);return;}
+      if(resp._badRequest){showToast(resp.error||'Error');return;}
+      showToast('Booking saved!');
+      afterSaveSuccess();
+    }).catch(function(e){showToast('Error: '+(e.message||'saving'));});
+  }
+}
+
+function loadBooking(id){
+  // Try from server first
+  if(typeof id==='number'){
+    api('GET','/api/bookings/'+id).then(function(bk){
+      if(bk.error) return;
+      editingBookingId=id;
+      clearBookingForm();
+      var data=bk.form_data||{};
+      if(typeof data==='string') try{data=JSON.parse(data);}catch(e){data={};}
+      // Restore cost sheet selection state before filling form
+      if(data.costSheetSelection){
+        var cs=data.costSheetSelection;
+        if(cs.bld) S.bld=cs.bld;
+        if(typeof cs.fi==='number') S.fi=cs.fi;
+        if(typeof cs.su==='number') S.su=cs.su;
+        if(typeof cs.sf==='number') S.sf=cs.sf;
+      }
+      fillBookingForm(data);
+      // Populate Quick Fill dropdowns and sync saved values
+      populateQuickFillDropdowns();
+      // Set customer/CP selects
+      if(bk.customer_id){
+        var sel=document.getElementById('bf_custSelect');
+        if(sel) sel.value=bk.customer_id;
+      }
+      if(bk.cp_id){
+        var sel2=document.getElementById('bf_cpSelect');
+        if(sel2) sel2.value=bk.cp_id;
+      }
+      // Sync tower/flat dropdowns
+      var tSel=document.getElementById('bf_selTower');
+      if(tSel&&bk.building) tSel.value=bk.building==='B7'?'B7':'B5';
+      // Sync sales dropdown
+      setTimeout(function(){
+        var sSel=document.getElementById('bf_selSales');
+        if(sSel&&bk.sales_person) sSel.value=bk.sales_person;
+        var hSel=document.getElementById('bf_selSiteHead');
+        var shVal=document.getElementById('bf_siteHead').value;
+        if(hSel&&shVal) hSel.value=shVal;
+      },500);
+      document.getElementById('bfForm').style.display='block';
+      setupAutoSync();
+      document.getElementById('bfPage1').scrollIntoView({behavior:'smooth'});
+    }).catch(function(){});
+    return;
+  }
+  // Fallback to local
+  var bookings=getBookings();
+  for(var i=0;i<bookings.length;i++){
+    if(bookings[i].id===id){
+      editingBookingId=id;
+      clearBookingForm();
+      fillBookingForm(bookings[i].data);
+      populateQuickFillDropdowns();
+      document.getElementById('bfForm').style.display='block';
+      setupAutoSync();
+      document.getElementById('bfPage1').scrollIntoView({behavior:'smooth'});
+      return;
+    }
+  }
+}
+
+function deleteBooking(id){
+  if(!hasPerm('bookings.delete')){showToast('Access denied: no delete permission');return;}
+  if(!confirm('Delete this booking? This cannot be undone.')) return;
+  // Delete from server if numeric ID
+  if(typeof id==='number'){
+    api('PUT','/api/bookings/'+id,{status:'cancelled'}).then(function(){
+      renderBookingList();
+      showToast('Booking cancelled');
+    }).catch(function(){});
+  }
+  // Also clean local
+  var bookings=getBookings().filter(function(b){return b.id!==id;});
+  saveBookingsLocal(bookings);
+  if(editingBookingId===id){
+    editingBookingId=null;
+    document.getElementById('bfForm').style.display='none';
+  }
+  renderBookingList();
+}
+
+function cancelBooking(){
+  editingBookingId=null;
+  document.getElementById('bfForm').style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+var allServerBookings=[];
+
+function renderBookingList(){
+  // Clear search
+  var searchEl=document.getElementById('bookingSearch');
+  if(searchEl) searchEl.value='';
+  // Load from server
+  api('GET','/api/bookings').then(function(bookings){
+    allServerBookings=bookings||[];
+    renderBookingCards(allServerBookings);
+  }).catch(function(){
+    // Fallback to local bookings
+    var bookings=getBookings();
+    allServerBookings=[];
+    renderBookingCards([]);
+  });
+}
+
+function searchBookings(){
+  var q=(document.getElementById('bookingSearch').value||'').trim().toLowerCase();
+  if(!q){renderBookingCards(allServerBookings);return;}
+  var filtered=allServerBookings.filter(function(b){
+    var searchStr=[
+      b.customer_name||'',b.customer_uid||'',
+      b.building||'',b.flat_no?''+b.flat_no:'',b.flat_no?'Flat '+b.flat_no:'',
+      b.flat_type||'',b.floor?'Floor '+b.floor:'',
+      b.cp_name||'',b.sales_person||'',
+      b.customer_phone||''
+    ].join(' ').toLowerCase();
+    return searchStr.indexOf(q)!==-1;
+  });
+  renderBookingCards(filtered);
+}
+
+function renderBookingCards(bookings){
+  var el=document.getElementById('bfList');
+  if(!bookings||!bookings.length){
+    el.innerHTML='<div style="text-align:center;padding:30px 16px;color:var(--muted);font-size:13px"><div style="font-size:40px;margin-bottom:8px">📋</div><div style="font-weight:600">No bookings found</div><div style="font-size:11px;margin-top:4px">Click "+ New Booking Form" to create one</div></div>';
+    return;
+  }
+  var h='<div style="font-size:12px;font-weight:700;color:var(--text2);padding:0 0 10px;text-transform:uppercase;letter-spacing:.5px">📋 Active Bookings ('+bookings.length+')</div>';
+  bookings.forEach(function(b){
+    var name=b.customer_name||'Unnamed';
+    var custUid=b.customer_uid||'';
+    var tower=b.building||'';
+    var flatNo=b.flat_no?'Flat '+b.flat_no:'';
+    var flat=b.flat_type||'';
+    var floor=b.floor?'Floor '+b.floor:'';
+    var tp=b.total_package?f$(b.total_package):'';
+    var bkAmt=b.booking_amount?f$(b.booking_amount):'';
+    var cpName=b.cp_name||'';
+    var salesP=b.sales_person||'';
+    var dateStr=b.created_at?new Date(b.created_at).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'';
+
+    h+='<div class="bf-list-item">';
+    // Top row — name + date
+    h+='<div class="bf-list-top" onclick="loadBooking('+b.id+')">';
+    h+='<div style="flex:1">';
+    if(custUid) h+='<span class="bf-list-uid">'+custUid+'</span>';
+    h+='<span class="bf-list-name">'+name+'</span>';
+    h+='</div>';
+    h+='<div class="bf-list-date">'+dateStr+'</div>';
+    h+='</div>';
+
+    // Detail tags
+    h+='<div class="bf-list-details" onclick="loadBooking('+b.id+')">';
+    if(tower) h+='<span class="bf-list-tag tower">🏢 '+tower+'</span>';
+    if(flatNo) h+='<span class="bf-list-tag flat">🏠 '+flatNo+'</span>';
+    if(flat) h+='<span class="bf-list-tag type">'+flat+'</span>';
+    if(floor) h+='<span class="bf-list-tag type">'+floor+'</span>';
+    if(tp) h+='<span class="bf-list-tag amt">💰 TP: '+tp+'</span>';
+    if(bkAmt) h+='<span class="bf-list-tag amt">Booking: '+bkAmt+'</span>';
+    if(cpName) h+='<span class="bf-list-tag cp">🤝 '+cpName+'</span>';
+    if(salesP) h+='<span class="bf-list-tag sales">💼 '+salesP+'</span>';
+    h+='</div>';
+
+    // Action buttons
+    h+='<div class="bf-list-actions" onclick="event.stopPropagation()">';
+    h+='<button class="bf-list-btn view" onclick="loadBooking('+b.id+')">View</button>';
+    if(hasPerm('bookings.edit')) h+='<button class="bf-list-btn edit" onclick="loadBooking('+b.id+')">Edit</button>';
+    if(hasPerm('bookings.delete')) h+='<button class="bf-list-btn del" onclick="deleteBooking('+b.id+')">Delete</button>';
+    h+='</div>';
+    h+='</div>';
+  });
+  el.innerHTML=h;
+}
+
+function showToast(msg){
+  var el=document.getElementById('bfToast');
+  el.textContent=msg;
+  el.classList.add('show');
+  setTimeout(function(){el.classList.remove('show');},2500);
+}
+
+/* ============================================================
+   INVENTORY VIEW
+   ============================================================ */
+var TYPE_SHORT={
+  '4 BHK A':'4A','4 BHK B':'4B',
+  '3 BHK A':'3A','3 BHK B':'3B',
+  '2.5 BHK A':'2.5A','2.5 BHK B':'2.5B',
+  '1.5 BHK (Refuge)':'1.5R'
+};
+var RF_FLOORS=[7,12,17,22];
+
+function renderInventory(){
+  // Load sold flats from API
+  api('GET','/api/inventory').then(function(sold){
+    var soldNos={};
+    Object.keys(sold).forEach(function(key){
+      var s=sold[key];
+      if(s.flat_no) soldNos[s.flat_no]=s.buyer||'Booked';
+    });
+    renderInventoryGrid(soldNos);
+  }).catch(function(){
+    // Fallback: try local bookings
+    var bookings=getBookings();
+    var soldNos={};
+    bookings.forEach(function(bk){
+      if(bk.data&&bk.data.costSheetSelection&&bk.data.costSheetSelection.bld==='B7'){
+        var fn=bk.data.fields&&bk.data.fields['bf_projFlatNo'];
+        if(fn){var num=parseInt(fn.replace(/[^\d]/g,''),10);if(num)soldNos[num]=bk.name||'Booked';}
+      }
+    });
+    renderInventoryGrid(soldNos);
+  });
+}
+
+function renderInventoryGrid(soldNos){
+
+  var flats=D.B7.flats;
+  var totalFlats=flats.length;
+  var soldCount=0;
+  flats.forEach(function(fl){if(soldNos[fl.no])soldCount++;});
+  var availCount=totalFlats-soldCount;
+  var soldPct=totalFlats?Math.round(soldCount/totalFlats*100):0;
+
+  // ── Type-wise analytics ──
+  var typeData={};
+  flats.forEach(function(fl){
+    var t=fl.type;
+    if(!typeData[t]) typeData[t]={type:t,sq:fl.sq,total:0,sold:0,avail:0,totalArea:0,soldArea:0};
+    typeData[t].total++;
+    typeData[t].totalArea+=fl.sq;
+    if(soldNos[fl.no]){
+      typeData[t].sold++;
+      typeData[t].soldArea+=fl.sq;
+    }else{
+      typeData[t].avail++;
+    }
+  });
+
+  // Total area calculations
+  var totalArea=0,soldArea=0;
+  flats.forEach(function(fl){
+    totalArea+=fl.sq;
+    if(soldNos[fl.no]) soldArea+=fl.sq;
+  });
+  var availArea=totalArea-soldArea;
+
+  // Revenue potential (use base rate slab 1 as estimate)
+  var baseRate=D.B7.base;
+
+  var h='';
+
+  // ── HEADER ──
+  h+='<div class="inv-header">';
+  h+='<div class="inv-title">&#127970; B7 Tower &mdash; Inventory Status</div>';
+  h+='<div class="inv-sub">'+D.B7.name+' | RERA: '+D.B7.rera+' | '+totalFlats+' Units | 27 Floors</div>';
+  h+='<div class="inv-legend">';
+  h+='<div class="inv-legend-item"><div class="inv-legend-box avail"></div> Available</div>';
+  h+='<div class="inv-legend-item"><div class="inv-legend-box sold"></div> Sold</div>';
+  h+='</div>';
+  h+='<div class="inv-stats">';
+  h+='<div class="inv-stat avail">&#9898; Available: '+availCount+'</div>';
+  h+='<div class="inv-stat sold">&#9989; Sold: '+soldCount+'</div>';
+  h+='<div class="inv-stat total">&#127970; Total: '+totalFlats+'</div>';
+  h+='<div class="inv-stat pct">&#128200; '+soldPct+'% Sold</div>';
+  h+='</div>';
+  h+='</div>';
+
+  // ── GRID ──
+  h+='<div class="inv-grid"><table class="inv-table">';
+  h+='<tr><td></td>';
+  for(var p=1;p<=8;p++) h+='<td style="text-align:center;font-size:9px;font-weight:700;color:var(--muted);padding:2px 0">Unit '+String(p).padStart(2,'0')+'</td>';
+  h+='</tr>';
+
+  for(var f=27;f>=1;f--){
+    var isRef=RF_FLOORS.indexOf(f)!==-1;
+    h+='<tr>';
+    h+='<td class="inv-floor-label'+(isRef?' ref':'')+'">F'+f+(isRef?'<br><span style="font-size:8px">R</span>':'')+'</td>';
+    for(var p=0;p<8;p++){
+      var flatNo=f*100+(p+1);
+      var flat=null;
+      for(var fi=0;fi<flats.length;fi++){if(flats[fi].no===flatNo){flat=flats[fi];break;}}
+      if(!flat) continue;
+      var isSold=!!soldNos[flatNo];
+      var shortType=TYPE_SHORT[flat.type]||flat.type;
+      h+='<td class="inv-cell '+(isSold?'sold':'avail')+'" title="Flat '+flatNo+' \u2014 '+flat.type+' \u2014 '+flat.sq+' sqft \u2014 '+flat.pk+(isSold?' \u2014 Buyer: '+soldNos[flatNo]:'')+'">';
+      h+='<div class="inv-cell-no">'+flatNo+'</div>';
+      h+='<div class="inv-cell-type">'+shortType+'</div>';
+      h+='<div class="inv-cell-area">'+flat.sq+'</div>';
+      h+='</td>';
+    }
+    h+='</tr>';
+  }
+  h+='</table></div>';
+
+  // ── ANALYTICS REPORT ──
+  h+='<div class="inv-report">';
+  h+='<div class="inv-report-title">&#128202; Type-wise Sales Report</div>';
+
+  // Type cards
+  h+='<div class="inv-report-grid">';
+  var typeOrder=['4 BHK A','4 BHK B','3 BHK A','3 BHK B','2.5 BHK A','2.5 BHK B','1.5 BHK (Refuge)'];
+  typeOrder.forEach(function(t){
+    var d=typeData[t];
+    if(!d) return;
+    var pct=d.total?Math.round(d.sold/d.total*100):0;
+    h+='<div class="inv-rcard">';
+    h+='<div class="inv-rcard-type">'+t+'</div>';
+    h+='<div class="inv-rcard-area">'+d.sq+' sqft | '+d.total+' units</div>';
+    h+='<div class="inv-rcard-row"><span class="inv-rcard-label">Sold</span><span class="inv-rcard-val green">'+d.sold+' / '+d.total+'</span></div>';
+    h+='<div class="inv-rcard-row"><span class="inv-rcard-label">Available</span><span class="inv-rcard-val">'+d.avail+'</span></div>';
+    h+='<div class="inv-rcard-row"><span class="inv-rcard-label">Sold %</span><span class="inv-rcard-val">'+pct+'%</span></div>';
+    h+='<div class="inv-rcard-row"><span class="inv-rcard-label">Sold Area</span><span class="inv-rcard-val">'+fComma(d.soldArea)+' sqft</span></div>';
+    h+='<div class="inv-rcard-bar"><div class="inv-rcard-bar-fill" style="width:'+pct+'%"></div></div>';
+    h+='</div>';
+  });
+  h+='</div>';
+
+  // Summary card
+  h+='<div class="inv-summary">';
+  h+='<div class="inv-summary-title">&#128203; Overall Summary</div>';
+  h+='<div class="inv-summary-row"><span class="inv-summary-label">Total Inventory</span><span class="inv-summary-val">'+totalFlats+' Units</span></div>';
+  h+='<div class="inv-summary-row"><span class="inv-summary-label">Sold Units</span><span class="inv-summary-val" style="color:#2e7d32">'+soldCount+' ('+soldPct+'%)</span></div>';
+  h+='<div class="inv-summary-row"><span class="inv-summary-label">Available Units</span><span class="inv-summary-val">'+availCount+' ('+(100-soldPct)+'%)</span></div>';
+  h+='<div class="inv-summary-row"><span class="inv-summary-label">Total Carpet Area</span><span class="inv-summary-val">'+fComma(totalArea)+' sqft</span></div>';
+  h+='<div class="inv-summary-row"><span class="inv-summary-label">Sold Carpet Area</span><span class="inv-summary-val" style="color:#2e7d32">'+fComma(soldArea)+' sqft</span></div>';
+  h+='<div class="inv-summary-row"><span class="inv-summary-label">Available Carpet Area</span><span class="inv-summary-val">'+fComma(availArea)+' sqft</span></div>';
+  h+='<div class="inv-summary-row"><span class="inv-summary-label">Avg. Rate (Base)</span><span class="inv-summary-val">'+f$(baseRate)+'/sqft</span></div>';
+  h+='<div class="inv-summary-row"><span class="inv-summary-label">Est. Sold Value (Base TP)</span><span class="inv-summary-val" style="color:#2e7d32">'+fL(calcTP(baseRate,soldArea))+'</span></div>';
+  h+='<div class="inv-summary-row"><span class="inv-summary-label">Est. Available Value (Base TP)</span><span class="inv-summary-val">'+fL(calcTP(baseRate,availArea))+'</span></div>';
+  h+='</div>';
+
+  h+='</div>'; // .inv-report
+
+  document.getElementById('invContent').innerHTML=h;
+}
+
+/* ============================================================
+   LOGIN / LOGOUT (unified single login)
+   ============================================================ */
+function openLogin(){
+  if(AUTH_TOKEN){
+    // Already logged in — just show logged-in state
+    return;
+  }
+  document.getElementById('adm-user').value='';
+  document.getElementById('adm-pass').value='';
+  document.getElementById('loginErr').style.display='none';
+  document.getElementById('loginModal').classList.add('show');
+}
+
+function closeModals(){
+  document.getElementById('loginModal').classList.remove('show');
+}
+
+function doLogin(){
+  var u=document.getElementById('adm-user').value.trim();
+  var p=document.getElementById('adm-pass').value.trim();
+  var errEl=document.getElementById('loginErr');
+  errEl.style.display='none';
+
+  // Sign in via Supabase Auth (username -> email mapping)
+  var email=u+'@ggc.local';
+  _supabase.auth.signInWithPassword({email:email,password:p}).then(function(result){
+    if(result.error){
+      errEl.textContent=result.error.message||'Invalid credentials';
+      errEl.style.display='block';
+      return;
+    }
+    AUTH_TOKEN=result.data.session.access_token;
+    sessionStorage.setItem('ggc_token',AUTH_TOKEN);
+
+    // Fetch profile (role, permissions, name) from backend
+    return api('GET','/api/me');
+  }).then(function(profile){
+    if(!profile||profile.error) return;
+    AUTH_USER=profile.name||u;
+    AUTH_ROLE=profile.role;
+    AUTH_PERMS=profile.permissions||'';
+    if(hasAnyPerm('rates')||hasAnyPerm('users')) isAdmin=true;
+    if(hasAnyPerm('customers')||hasAnyPerm('bookings')||hasAnyPerm('channel_partners')||hasAnyPerm('inventory')) isBfLoggedIn=true;
+    sessionStorage.setItem('ggc_name',AUTH_USER);
+    sessionStorage.setItem('ggc_role',AUTH_ROLE);
+    sessionStorage.setItem('ggc_perms',AUTH_PERMS);
+    document.getElementById('loginModal').classList.remove('show');
+    updateLoginUI();
+    // Navigate to first available tab
+    var pending=window._pendingTab;
+    window._pendingTab=null;
+    if(pending){switchMainTab(pending);}
+    else if(hasAnyPerm('customers')){switchMainTab('cust');}
+    else if(hasAnyPerm('bookings')){switchMainTab('bf');}
+    else if(hasAnyPerm('rates')||hasAnyPerm('users')){switchMainTab('admin');}
+    else{switchMainTab('cs');}
+  }).catch(function(err){
+    errEl.textContent='Login failed. Check credentials.';
+    errEl.style.display='block';
+  });
+}
+
+function showAdminPanel(){
+  var h='';
+  // Sub-tabs
+  h+='<div class="admin-sub-tabs">';
+  if(hasAnyPerm('rates')) h+='<button class="admin-sub-tab on" id="admSubRateBtn" onclick="switchAdminSub(\'rates\')">&#9881; Rate Config</button>';
+  if(hasAnyPerm('users')) h+='<button class="admin-sub-tab" id="admSubUsersBtn" onclick="switchAdminSub(\'users\')">&#128101; User Management</button>';
+  if(hasAnyPerm('users')) h+='<button class="admin-sub-tab" id="admSubSalesBtn" onclick="switchAdminSub(\'sales\')">&#128188; Sales Staff</button>';
+  h+='</div>';
+
+  // ── Rate Config sub-section ──
+  h+='<div id="adminSubRates">';
+  h+='<div class="adm-rise">Floor Rise: +'+f$(FLOOR_RISE)+'/sqft per slab (every 5 floors)</div>';
+  Object.keys(D).forEach(function(bk){
+    var b=D[bk];
+    h+='<div class="adm-section">';
+    h+='<h4>'+b.name+' &mdash; Base Price</h4>';
+    h+='<div class="adm-row">';
+    h+='<div class="adm-lbl">Base Rate (1st-5th Floor)<small>Higher floors auto +'+FLOOR_RISE+'/sqft per slab</small></div>';
+    h+='<input class="adm-inp" type="number" id="base_'+bk+'" value="'+b.base+'"'+(hasPerm('rates.edit')?'':' disabled')+' >';
+    h+='</div>';
+    h+='<div style="padding:8px 0;font-size:11px;color:var(--muted)">';
+    SLABS.forEach(function(s,i){
+      var rate=slabRate(b.base,i);
+      h+='<div style="display:flex;justify-content:space-between;padding:3px 0"><span>'+s.l+'</span><span style="font-weight:600;color:var(--text2)" id="prev_'+bk+'_'+i+'">'+f$(rate)+'/sqft</span></div>';
+    });
+    h+='</div>';
+    h+='</div>';
+  });
+  if(hasPerm('rates.edit')){
+    h+='<button class="adm-save" onclick="saveAdmin()">Save & Apply</button>';
+  }
+  h+='<div class="adm-toast" id="admToast">Prices updated successfully!</div>';
+  h+='<div class="adm-note">Floor rise of '+f$(FLOOR_RISE)+'/sqft is added automatically per slab.</div>';
+  h+='</div>';
+
+  // ── User Management sub-section ──
+  if(hasAnyPerm('users')){
+    h+='<div id="adminSubUsers" style="display:none">';
+    h+='<div id="userMgmtList" style="margin:10px 0"><div style="text-align:center;color:var(--muted);padding:12px">Loading users...</div></div>';
+
+    if(hasPerm('users.add')){
+      h+='<div style="background:#f5f5f5;border-radius:8px;padding:14px;margin-top:12px">';
+      h+='<div style="font-weight:700;font-size:13px;margin-bottom:10px;color:#333">&#10133; Add New User</div>';
+      h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">';
+      h+='<input class="adm-inp" id="nu_name" placeholder="Full Name" style="margin:0">';
+      h+='<input class="adm-inp" id="nu_username" placeholder="Username" style="margin:0">';
+      h+='</div>';
+      h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">';
+      h+='<input class="adm-inp" id="nu_password" placeholder="Password" type="password" style="margin:0">';
+      h+='<select class="adm-inp" id="nu_role" onchange="onRolePresetChange()" style="margin:0;padding:8px">';
+      h+='<option value="sales">Sales</option>';
+      h+='<option value="crm">CRM</option>';
+      h+='<option value="superadmin">Super Admin</option>';
+      h+='<option value="custom">Custom</option>';
+      h+='</select>';
+      h+='</div>';
+      h+=buildPermGrid('nu');
+      h+='<button class="adm-save" onclick="addUser()" style="margin:0;font-size:12px;padding:8px 16px">Add User</button>';
+      h+='</div>';
+    }
+    h+='</div>';
+  }
+
+  // ── Sales Staff sub-section ──
+  if(hasAnyPerm('users')){
+    h+='<div id="adminSubSales" style="display:none">';
+    h+='<div id="salesStaffList" style="margin:10px 0"><div style="text-align:center;color:var(--muted);padding:12px">Loading sales staff...</div></div>';
+    if(hasPerm('users.add')){
+      h+='<div style="background:#f5f5f5;border-radius:8px;padding:14px;margin-top:12px">';
+      h+='<div style="font-weight:700;font-size:13px;margin-bottom:10px;color:#333">&#10133; Add Sales Person</div>';
+      h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">';
+      h+='<input class="adm-inp" id="ns_name" placeholder="Full Name" style="margin:0">';
+      h+='<input class="adm-inp" id="ns_phone" placeholder="Phone" style="margin:0">';
+      h+='<input class="adm-inp" id="ns_email" placeholder="Email" style="margin:0">';
+      h+='</div>';
+      h+='<button class="adm-save" onclick="addSalesStaff()" style="margin:0;font-size:12px;padding:8px 16px">Add Staff</button>';
+      h+='</div>';
+    }
+    h+='</div>';
+  }
+
+  h+='<button class="adm-logout" onclick="doLogout()" style="margin-top:20px">Logout</button>';
+
+  document.getElementById('adminContent').innerHTML=h;
+
+  // Rate input listeners
+  Object.keys(D).forEach(function(bk){
+    var inp=document.getElementById('base_'+bk);
+    if(inp){
+      inp.addEventListener('input',function(){
+        var val=parseInt(this.value)||0;
+        for(var i=0;i<SLABS.length;i++){
+          var el=document.getElementById('prev_'+bk+'_'+i);
+          if(el) el.textContent=f$(val+(i*FLOOR_RISE))+'/sqft';
+        }
+      });
+    }
+  });
+
+  // If no rates perm but has users perm, auto-switch to users tab
+  if(!hasAnyPerm('rates')&&hasAnyPerm('users')){
+    switchAdminSub('users');
+  }
+}
+
+function switchAdminSub(sub){
+  var ratesEl=document.getElementById('adminSubRates');
+  var usersEl=document.getElementById('adminSubUsers');
+  var salesEl=document.getElementById('adminSubSales');
+  var rateBtn=document.getElementById('admSubRateBtn');
+  var usersBtn=document.getElementById('admSubUsersBtn');
+  var salesBtn=document.getElementById('admSubSalesBtn');
+  if(ratesEl) ratesEl.style.display=sub==='rates'?'':'none';
+  if(usersEl) usersEl.style.display=sub==='users'?'':'none';
+  if(salesEl) salesEl.style.display=sub==='sales'?'':'none';
+  if(rateBtn) rateBtn.className='admin-sub-tab'+(sub==='rates'?' on':'');
+  if(usersBtn) usersBtn.className='admin-sub-tab'+(sub==='users'?' on':'');
+  if(salesBtn) salesBtn.className='admin-sub-tab'+(sub==='sales'?' on':'');
+  if(sub==='users') loadUsersList();
+  if(sub==='sales') loadSalesStaff();
+}
+
+function saveAdmin(){
+  if(!hasPerm('rates.edit')){showToast('No permission');return;}
+  var rateData={};
+  Object.keys(D).forEach(function(bk){
+    var inp=document.getElementById('base_'+bk);
+    if(inp){
+      var val=parseInt(inp.value);
+      if(val&&val>0){
+        D[bk].base=val;
+        rateData[bk]={base:val};
+      }
+    }
+  });
+  api('PUT','/api/rates',rateData).then(function(data){
+    if(data._forbidden){showToast('Access denied');return;}
+    var t=document.getElementById('admToast');
+    t.style.display='block';
+    setTimeout(function(){t.style.display='none';},2000);
+    go();
+  }).catch(function(e){
+    showToast('Error saving rates: '+e.message);
+  });
+  try{localStorage.setItem('ggc_admin_rates',JSON.stringify(rateData));}catch(e){}
+}
+
+/* ============================================================
+   USER MANAGEMENT FUNCTIONS
+   ============================================================ */
+var PERM_COLORS={rates:'#e65100',users:'#ad1457',customers:'#1565c0',bookings:'#2e7d32',channel_partners:'#6a1b9a',inventory:'#00695c'};
+var ALL_GRANULAR_PERMS=[
+  'customers.view','customers.add','customers.edit','customers.delete',
+  'bookings.view','bookings.add','bookings.edit','bookings.delete',
+  'channel_partners.view','channel_partners.add','channel_partners.edit','channel_partners.delete',
+  'inventory.view',
+  'rates.view','rates.edit',
+  'users.view','users.add','users.edit','users.delete'
+];
+var PERM_FEATURES=[
+  {key:'customers',label:'Customers',actions:['view','add','edit','delete']},
+  {key:'bookings',label:'Bookings',actions:['view','add','edit','delete']},
+  {key:'channel_partners',label:'Channel Partners',actions:['view','add','edit','delete']},
+  {key:'inventory',label:'Inventory',actions:['view']},
+  {key:'rates',label:'Rate Config',actions:['view','edit']},
+  {key:'users',label:'User Mgmt',actions:['view','add','edit','delete']}
+];
+var ROLE_PRESETS={
+  sales:'customers.view,customers.add,customers.edit,bookings.view,bookings.add,bookings.edit',
+  crm:'customers.view,customers.add,customers.edit,customers.delete,bookings.view,bookings.add,bookings.edit,bookings.delete,channel_partners.view,channel_partners.add,channel_partners.edit,channel_partners.delete,inventory.view',
+  superadmin:ALL_GRANULAR_PERMS.join(',')
+};
+
+function buildPermGrid(prefix){
+  var h='<div style="font-size:11px;font-weight:600;margin:8px 0 4px;color:#555">Permissions:</div>';
+  h+='<table class="perm-grid" style="margin-bottom:10px"><thead><tr>';
+  h+='<th>Feature</th><th>View</th><th>Add</th><th>Edit</th><th>Delete</th>';
+  h+='</tr></thead><tbody>';
+  var defaultPerms=(ROLE_PRESETS.sales||'').split(',');
+  PERM_FEATURES.forEach(function(f){
+    h+='<tr><td>'+f.label+'</td>';
+    ['view','add','edit','delete'].forEach(function(a){
+      var pk=f.key+'.'+a;
+      if(f.actions.indexOf(a)!==-1){
+        var chk=defaultPerms.indexOf(pk)!==-1?' checked':'';
+        h+='<td><input type="checkbox" id="'+prefix+'_perm_'+pk+'" value="'+pk+'"'+chk+' onchange="onPermCheckChange(\''+prefix+'\')"></td>';
+      }else{
+        h+='<td style="color:#ccc">-</td>';
+      }
+    });
+    h+='</tr>';
+  });
+  h+='</tbody></table>';
+  return h;
+}
+
+function onRolePresetChange(prefix){
+  prefix=prefix||'nu';
+  var roleEl=document.getElementById(prefix+'_role');
+  if(!roleEl) return;
+  var role=roleEl.value;
+  var presetPerms=(ROLE_PRESETS[role]||'').split(',');
+  ALL_GRANULAR_PERMS.forEach(function(p){
+    var cb=document.getElementById(prefix+'_perm_'+p);
+    if(cb){
+      if(role==='custom'){cb.disabled=false;}
+      else{cb.checked=presetPerms.indexOf(p)!==-1;cb.disabled=role==='superadmin';}
+    }
+  });
+}
+
+function onPermCheckChange(prefix){
+  prefix=prefix||'nu';
+  var roleEl=document.getElementById(prefix+'_role');
+  if(!roleEl||roleEl.value==='superadmin'||roleEl.value==='custom') return;
+  var preset=(ROLE_PRESETS[roleEl.value]||'').split(',').sort().join(',');
+  var checked=[];
+  ALL_GRANULAR_PERMS.forEach(function(p){
+    var cb=document.getElementById(prefix+'_perm_'+p);
+    if(cb&&cb.checked) checked.push(p);
+  });
+  if(checked.sort().join(',')!==preset) roleEl.value='custom';
+}
+
+function collectPerms(prefix){
+  var perms=[];
+  ALL_GRANULAR_PERMS.forEach(function(p){
+    var cb=document.getElementById(prefix+'_perm_'+p);
+    if(cb&&cb.checked) perms.push(p);
+  });
+  return perms.join(',');
+}
+
+function loadUsersList(){
+  api('GET','/api/users').then(function(users){
+    if(users._forbidden){
+      document.getElementById('userMgmtList').innerHTML='<div style="color:#c62828;padding:8px">Access denied</div>';
+      return;
+    }
+    var el=document.getElementById('userMgmtList');
+    if(!users||!users.length){
+      el.innerHTML='<div style="text-align:center;color:var(--muted);padding:12px">No users found</div>';
+      return;
+    }
+    var h='';
+    users.forEach(function(u){
+      h+='<div id="user_row_'+u.id+'" style="display:flex;align-items:center;justify-content:space-between;padding:10px;margin:6px 0;background:#fff;border-radius:8px;border:1px solid #e0e0e0">';
+      h+='<div style="flex:1">';
+      h+='<div style="font-weight:700;font-size:13px;color:#333">'+escH(u.name||u.username)+'</div>';
+      h+='<div style="font-size:11px;color:#888;margin-top:2px">@'+escH(u.username);
+      var roleColor=u.role==='superadmin'?'#e65100':u.role==='sales'?'#2e7d32':u.role==='crm'?'#1565c0':'#6a1b9a';
+      h+=' <span style="background:'+roleColor+';color:#fff;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:700;text-transform:uppercase;margin-left:4px">'+escH(u.role)+'</span>';
+      h+='</div>';
+      // Permission summary — group by feature
+      if(u.permissions){
+        h+='<div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:4px">';
+        var permArr=u.permissions.split(',');
+        var features={};
+        permArr.forEach(function(p){
+          p=p.trim();if(!p)return;
+          var parts=p.split('.');
+          var feat=parts[0],act=parts[1]||'';
+          if(!features[feat]) features[feat]=[];
+          features[feat].push(act.charAt(0).toUpperCase());
+        });
+        Object.keys(features).forEach(function(feat){
+          var color=PERM_COLORS[feat]||'#666';
+          var label=feat.replace('channel_partners','CP').replace('customers','Cust').replace('bookings','Book').replace('inventory','Inv').replace('rates','Rates').replace('users','Users');
+          h+='<span style="background:'+color+'22;color:'+color+';padding:1px 5px;border-radius:3px;font-size:9px;font-weight:600">'+label+'('+features[feat].join('')+')</span>';
+        });
+        h+='</div>';
+      }
+      h+='</div>';
+      h+='<div style="display:flex;gap:4px">';
+      if(hasPerm('users.edit')) h+='<button onclick="editUserPrompt(\''+u.id+'\')" style="padding:4px 10px;border:1px solid #1565c0;background:#e3f2fd;color:#1565c0;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer">Edit</button>';
+      if(hasPerm('users.delete')) h+='<button onclick="deleteUserPrompt(\''+u.id+'\',\''+escH(u.username)+'\')" style="padding:4px 10px;border:1px solid #c62828;background:#ffebee;color:#c62828;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer">Del</button>';
+      h+='</div>';
+      h+='</div>';
+    });
+    el.innerHTML=h;
+  }).catch(function(){
+    document.getElementById('userMgmtList').innerHTML='<div style="color:#c62828;padding:8px">Error loading users</div>';
+  });
+}
+
+function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
+function addUser(){
+  if(!hasPerm('users.add')){showToast('No permission');return;}
+  var name=document.getElementById('nu_name').value.trim();
+  var username=document.getElementById('nu_username').value.trim();
+  var password=document.getElementById('nu_password').value.trim();
+  var role=document.getElementById('nu_role').value;
+  var permissions=role==='superadmin'?ALL_GRANULAR_PERMS.join(','):collectPerms('nu');
+  if(!name||!username||!password){showToast('Please fill in name, username and password');return;}
+  api('POST','/api/users',{name:name,username:username,password:password,role:role,permissions:permissions}).then(function(data){
+    if(data._forbidden){showToast('Access denied');return;}
+    if(data.error){showToast(data.error);return;}
+    showToast('User "'+username+'" created!');
+    document.getElementById('nu_name').value='';
+    document.getElementById('nu_username').value='';
+    document.getElementById('nu_password').value='';
+    document.getElementById('nu_role').value='sales';
+    onRolePresetChange('nu');
+    loadUsersList();
+  }).catch(function(e){showToast('Error: '+e.message);});
+}
+
+function editUserPrompt(userId){
+  if(!hasPerm('users.edit')){showToast('No permission');return;}
+  api('GET','/api/users').then(function(users){
+    var user=null;
+    (users||[]).forEach(function(u){if(u.id===userId) user=u;});
+    if(!user){showToast('User not found');return;}
+    var el=document.getElementById('user_row_'+userId);
+    if(!el) return;
+    var perms=user.permissions||'';
+    var h='<div style="padding:10px;background:#fff3e0;border-radius:8px;border:2px solid #ff9800">';
+    h+='<div style="font-weight:700;font-size:12px;color:#e65100;margin-bottom:8px">Editing: '+escH(user.username)+'</div>';
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">';
+    h+='<input class="adm-inp" id="eu_name_'+userId+'" value="'+escH(user.name)+'" placeholder="Name" style="margin:0;font-size:12px">';
+    h+='<input class="adm-inp" id="eu_pass_'+userId+'" placeholder="New password (blank=keep)" type="password" style="margin:0;font-size:12px">';
+    h+='</div>';
+    h+='<select class="adm-inp" id="eu_role_'+userId+'" onchange="onRolePresetChange(\'eu_'+userId+'\')" style="margin:0 0 6px;padding:6px;font-size:12px;width:100%">';
+    ['sales','crm','superadmin','custom'].forEach(function(r){
+      h+='<option value="'+r+'"'+(user.role===r?' selected':'')+'>'+r.charAt(0).toUpperCase()+r.slice(1)+'</option>';
+    });
+    h+='</select>';
+    // Permission grid for edit
+    h+='<table class="perm-grid" style="margin-bottom:8px"><thead><tr>';
+    h+='<th>Feature</th><th>View</th><th>Add</th><th>Edit</th><th>Delete</th>';
+    h+='</tr></thead><tbody>';
+    PERM_FEATURES.forEach(function(f){
+      h+='<tr><td>'+f.label+'</td>';
+      ['view','add','edit','delete'].forEach(function(a){
+        var pk=f.key+'.'+a;
+        if(f.actions.indexOf(a)!==-1){
+          var chk=perms.indexOf(pk)!==-1?' checked':'';
+          var dis=user.role==='superadmin'?' disabled':'';
+          h+='<td><input type="checkbox" id="eu_'+userId+'_perm_'+pk+'" value="'+pk+'"'+chk+dis+' onchange="onPermCheckChange(\'eu_'+userId+'\')"></td>';
+        }else{
+          h+='<td style="color:#ccc">-</td>';
+        }
+      });
+      h+='</tr>';
+    });
+    h+='</tbody></table>';
+    h+='<div style="display:flex;gap:6px">';
+    h+='<button onclick="saveUserEdit(\''+userId+'\')" style="padding:5px 14px;background:#1565c0;color:#fff;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer">Save</button>';
+    h+='<button onclick="loadUsersList()" style="padding:5px 14px;background:#eee;color:#333;border:1px solid #ccc;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer">Cancel</button>';
+    h+='</div>';
+    h+='</div>';
+    el.innerHTML=h;
+  });
+}
+
+function saveUserEdit(userId){
+  var name=document.getElementById('eu_name_'+userId).value.trim();
+  var password=document.getElementById('eu_pass_'+userId).value.trim();
+  var role=document.getElementById('eu_role_'+userId).value;
+  var perms=role==='superadmin'?ALL_GRANULAR_PERMS.join(','):collectPerms('eu_'+userId);
+  var body={name:name,role:role,permissions:perms};
+  if(password) body.password=password;
+  api('PUT','/api/users/'+userId,body).then(function(data){
+    if(data._forbidden){showToast('Access denied');return;}
+    if(data.error){showToast(data.error);return;}
+    showToast('User updated!');
+    loadUsersList();
+  }).catch(function(e){showToast('Error: '+e.message);});
+}
+
+function deleteUserPrompt(userId,username){
+  if(!hasPerm('users.delete')){showToast('No permission');return;}
+  if(!confirm('Delete user "'+username+'"? This cannot be undone.')) return;
+  api('DELETE','/api/users/'+userId).then(function(data){
+    if(data._forbidden){showToast('Access denied');return;}
+    if(data.error){showToast(data.error);return;}
+    showToast('User "'+username+'" deleted');
+    loadUsersList();
+  }).catch(function(e){showToast('Error: '+e.message);});
+}
+
+/* ============================================================
+   SALES STAFF MANAGEMENT
+   ============================================================ */
+var allSalesStaff=[];
+
+function loadSalesStaff(){
+  api('GET','/api/sales-staff').then(function(staff){
+    allSalesStaff=staff||[];
+    renderSalesStaffList(staff);
+  }).catch(function(){
+    document.getElementById('salesStaffList').innerHTML='<div style="text-align:center;color:#d32f2f;padding:12px">Could not load sales staff</div>';
+  });
+}
+
+function renderSalesStaffList(staff){
+  var el=document.getElementById('salesStaffList');
+  if(!staff||!staff.length){
+    el.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted)"><div style="font-size:28px;margin-bottom:6px">💼</div><div style="font-weight:600">No sales staff added yet</div></div>';
+    return;
+  }
+  var h='<div style="font-size:12px;font-weight:700;color:var(--text2);padding:0 0 8px;text-transform:uppercase;letter-spacing:.5px">'+staff.length+' Sales Person(s)</div>';
+  staff.forEach(function(s){
+    h+='<div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:8px;padding:10px 14px;margin-bottom:6px;box-shadow:0 1px 3px rgba(0,0,0,.06)">';
+    h+='<div><div style="font-weight:700;font-size:13px;color:var(--text)">'+s.name+'</div>';
+    h+='<div style="font-size:11px;color:var(--muted)">';
+    if(s.phone) h+='📞 '+s.phone;
+    if(s.email) h+=(s.phone?' · ':'')+'✉ '+s.email;
+    h+='</div></div>';
+    h+='<div style="display:flex;gap:6px">';
+    if(hasPerm('users.edit')) h+='<button class="bf-list-btn edit" onclick="editSalesStaff('+s.id+',\''+s.name.replace(/'/g,"\\'")+'\',\''+( s.phone||'').replace(/'/g,"\\'")+'\',\''+(s.email||'').replace(/'/g,"\\'")+'\')">Edit</button>';
+    if(hasPerm('users.delete')) h+='<button class="bf-list-btn del" onclick="deleteSalesStaff('+s.id+',\''+s.name.replace(/'/g,"\\'")+'\')">Delete</button>';
+    h+='</div></div>';
+  });
+  el.innerHTML=h;
+}
+
+function addSalesStaff(){
+  if(!hasPerm('users.add')){showToast('No permission');return;}
+  var name=document.getElementById('ns_name').value.trim();
+  if(!name){showToast('Name is required');return;}
+  var data={
+    name:name,
+    phone:document.getElementById('ns_phone').value.trim(),
+    email:document.getElementById('ns_email').value.trim()
+  };
+  api('POST','/api/sales-staff',data).then(function(resp){
+    if(resp.ok){
+      showToast('Sales person added!');
+      document.getElementById('ns_name').value='';
+      document.getElementById('ns_phone').value='';
+      document.getElementById('ns_email').value='';
+      loadSalesStaff();
+    }
+  }).catch(function(){showToast('Error adding staff');});
+}
+
+function editSalesStaff(id,name,phone,email){
+  if(!hasPerm('users.edit')){showToast('No permission');return;}
+  var newName=prompt('Edit Name:',name);
+  if(newName===null) return;
+  var newPhone=prompt('Edit Phone:',phone);
+  if(newPhone===null) return;
+  var newEmail=prompt('Edit Email:',email);
+  if(newEmail===null) return;
+  api('PUT','/api/sales-staff/'+id,{name:newName.trim()||name,phone:newPhone.trim(),email:newEmail.trim()}).then(function(resp){
+    if(resp.ok){showToast('Updated!');loadSalesStaff();}
+  }).catch(function(){showToast('Error');});
+}
+
+function deleteSalesStaff(id,name){
+  if(!hasPerm('users.delete')){showToast('No permission');return;}
+  if(!confirm('Delete sales person "'+name+'"?')) return;
+  api('DELETE','/api/sales-staff/'+id).then(function(){
+    showToast('Deleted');loadSalesStaff();
+  }).catch(function(){showToast('Error');});
+}
+
+/* ============================================================
+   CUSTOMERS TAB
+   ============================================================ */
+function loadCustomers(){
+  api('GET','/api/customers').then(function(custs){
+    allCustomers=custs||[];
+    renderCustomerList(allCustomers);
+  }).catch(function(){
+    document.getElementById('custList').innerHTML='<div style="text-align:center;padding:20px;color:#d32f2f">Could not load customers. Is the server running?</div>';
+  });
+}
+
+function searchCustomers(){
+  var q=document.getElementById('custSearch').value.trim().toLowerCase();
+  if(!q){renderCustomerList(allCustomers);return;}
+  var filtered=allCustomers.filter(function(c){
+    return (c.name||'').toLowerCase().indexOf(q)!==-1||
+           (c.phone||'').indexOf(q)!==-1||
+           (c.email||'').toLowerCase().indexOf(q)!==-1;
+  });
+  renderCustomerList(filtered);
+}
+
+function renderCustomerList(custs){
+  var el=document.getElementById('custList');
+  if(!custs||!custs.length){
+    el.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted)"><div style="font-size:36px;margin-bottom:8px">&#128101;</div><div style="font-weight:600">No customers yet</div><div style="font-size:11px;margin-top:4px">Click "+ Add Customer" to create one</div></div>';
+    return;
+  }
+  var h='<div style="font-size:12px;font-weight:700;color:var(--text2);padding:0 0 8px;text-transform:uppercase;letter-spacing:.5px">'+custs.length+' Customer(s)</div>';
+  custs.forEach(function(c){
+    var badge=c.status==='NRI'?'<span class="cust-badge nri">NRI</span>':'<span class="cust-badge res">Resident</span>';
+    var uidTag=c.cust_uid?'<span class="cust-uid">'+c.cust_uid+'</span>':'';
+    var canEdit=hasPerm('customers.edit');
+    var canDel=hasPerm('customers.delete');
+    h+='<div class="cust-card" style="cursor:'+(canEdit?'pointer':'default')+'">';
+    h+='<div style="display:flex;justify-content:space-between;align-items:flex-start">';
+    h+='<div style="flex:1"'+(canEdit?' onclick="editCust('+c.id+')"':'')+'>';
+    h+='<div class="cust-name">'+uidTag+c.name+badge+'</div>';
+    h+='<div class="cust-meta">';
+    if(c.phone) h+='📞 '+c.phone;
+    if(c.email) h+=' &bull; ✉ '+c.email;
+    if(c.pan) h+=' &bull; PAN: '+c.pan;
+    h+='</div>';
+    h+='</div>';
+    if(canEdit||canDel){
+      h+='<div style="display:flex;gap:6px;flex-shrink:0;margin-left:8px" onclick="event.stopPropagation()">';
+      if(canEdit) h+='<button class="bf-list-btn edit" onclick="editCust('+c.id+')">Edit</button>';
+      if(canDel) h+='<button class="bf-list-btn del" onclick="deleteCust('+c.id+',\''+c.name.replace(/'/g,"\\'")+'\')">Delete</button>';
+      h+='</div>';
+    }
+    h+='</div>';
+    h+='</div>';
+  });
+  el.innerHTML=h;
+}
+
+function showCustForm(id){
+  document.getElementById('custFormWrap').style.display='block';
+  document.getElementById('custFormTitle').innerHTML=id?'👤 Edit Customer':'👤 Add New Customer';
+  document.getElementById('custEditId').value=id||'';
+  if(!id){
+    ['cf_name','cf_phone','cf_email','cf_pan','cf_aadhar','cf_dob','cf_address','cf_company','cf_notes'].forEach(function(f){
+      document.getElementById(f).value='';
+    });
+    document.getElementById('cf_profession').value='';
+    document.getElementById('cf_status').value='Resident';
+  }
+  document.getElementById('custFormWrap').scrollIntoView({behavior:'smooth'});
+}
+
+function hideCustForm(){
+  document.getElementById('custFormWrap').style.display='none';
+}
+
+function editCust(id){
+  api('GET','/api/customers/'+id).then(function(c){
+    showCustForm(id);
+    if(c.cust_uid){
+      document.getElementById('custFormTitle').innerHTML='👤 Edit Customer <span class="cust-uid" style="font-size:12px">'+c.cust_uid+'</span>';
+    }
+    document.getElementById('cf_name').value=c.name||'';
+    document.getElementById('cf_phone').value=c.phone||'';
+    document.getElementById('cf_email').value=c.email||'';
+    document.getElementById('cf_pan').value=c.pan||'';
+    document.getElementById('cf_aadhar').value=c.aadhar||'';
+    document.getElementById('cf_dob').value=c.dob||'';
+    document.getElementById('cf_address').value=c.address||'';
+    document.getElementById('cf_company').value=c.company||'';
+    document.getElementById('cf_profession').value=c.profession||'';
+    document.getElementById('cf_status').value=c.status||'Resident';
+    document.getElementById('cf_notes').value=c.notes||'';
+  });
+}
+
+function saveCust(){
+  var editId=document.getElementById('custEditId').value;
+  var reqPerm=editId?'customers.edit':'customers.add';
+  if(!hasPerm(reqPerm)){showToast('Access denied: no '+reqPerm+' permission');return;}
+  var name=document.getElementById('cf_name').value.trim();
+  if(!name){showToast('Customer name is required');return;}
+  var data={
+    name:name,
+    phone:document.getElementById('cf_phone').value.trim(),
+    email:document.getElementById('cf_email').value.trim(),
+    pan:document.getElementById('cf_pan').value.trim().toUpperCase(),
+    aadhar:document.getElementById('cf_aadhar').value.trim(),
+    dob:document.getElementById('cf_dob').value,
+    address:document.getElementById('cf_address').value.trim(),
+    company:document.getElementById('cf_company').value.trim(),
+    profession:document.getElementById('cf_profession').value,
+    status:document.getElementById('cf_status').value,
+    notes:document.getElementById('cf_notes').value.trim()
+  };
+  if(editId){
+    api('PUT','/api/customers/'+editId,data).then(function(resp){
+      if(resp._forbidden){showToast(resp.error||'Access denied');return;}
+      if(resp._isDuplicate){showDuplicateAlert(resp);return;}
+      showToast('Customer updated!');hideCustForm();loadCustomers();
+    }).catch(function(e){showToast('Error: '+(e.message||'updating'));});
+  }else{
+    api('POST','/api/customers',data).then(function(resp){
+      if(resp._forbidden){showToast(resp.error||'Access denied');return;}
+      if(resp._isDuplicate){showDuplicateAlert(resp);return;}
+      showToast('Customer added!');hideCustForm();loadCustomers();
+    }).catch(function(e){showToast('Error: '+(e.message||'adding'));});
+  }
+}
+
+function deleteCust(id,name){
+  if(!hasPerm('customers.delete')){showToast('Access denied');return;}
+  if(!confirm('Delete customer "'+name+'"? This cannot be undone.')) return;
+  api('DELETE','/api/customers/'+id).then(function(resp){
+    if(resp.error){showToast(resp.error);return;}
+    showToast('Customer deleted');hideCustForm();loadCustomers();
+  }).catch(function(e){showToast('Error: '+(e.message||'deleting'));});
+}
+
+/* ============================================================
+   CHANNEL PARTNERS TAB
+   ============================================================ */
+function loadCPs(){
+  api('GET','/api/cp').then(function(cps){
+    allCPs=cps||[];
+    renderCPList(allCPs);
+  }).catch(function(){
+    document.getElementById('cpList').innerHTML='<div style="text-align:center;padding:20px;color:#d32f2f">Could not load CPs</div>';
+  });
+}
+
+function renderCPList(cps){
+  var el=document.getElementById('cpList');
+  if(!cps||!cps.length){
+    el.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted)"><div style="font-size:36px;margin-bottom:8px">&#129309;</div><div style="font-weight:600">No channel partners yet</div></div>';
+    return;
+  }
+  var h='<div style="font-size:12px;font-weight:700;color:var(--text2);padding:0 0 8px;text-transform:uppercase;letter-spacing:.5px">'+cps.length+' Channel Partner(s)</div>';
+  cps.forEach(function(cp){
+    h+='<div class="cp-card" id="cp-card-'+cp.id+'">';
+    h+='<div class="cp-card-hdr" onclick="toggleCpCard('+cp.id+')">';
+    // Photo
+    if(cp.photo){
+      h+='<img class="cp-photo" src="'+cp.photo+'" alt="'+cp.firm_name+'">';
+    }else{
+      h+='<div class="cp-photo-placeholder">&#128100;</div>';
+    }
+    h+='<div style="flex:1"><div class="cp-firm">'+cp.firm_name+'</div>';
+    h+='<div class="cp-contact">'+[cp.contact_person,cp.phone,cp.email].filter(function(v){return v;}).join(' | ')+'</div></div>';
+    if(cp.rera_no) h+='<div class="cp-rera">RERA: '+cp.rera_no+'</div>';
+    h+='</div>';
+    // FOS list
+    h+='<div class="cp-fos-list" id="cp-fos-'+cp.id+'" style="display:none">';
+    if(cp.fos&&cp.fos.length){
+      cp.fos.forEach(function(f){
+        h+='<div class="cp-fos-item"><div><span class="cp-fos-name">'+f.name+'</span>';
+        if(f.phone) h+=' <span class="cp-fos-phone">'+f.phone+'</span>';
+        if(f.email) h+=' <span class="cp-fos-phone">'+f.email+'</span>';
+        h+='</div>';
+        if(hasPerm('channel_partners.delete')) h+='<button class="cp-fos-del" onclick="delFos('+cp.id+','+f.id+')">&#10060;</button>';
+        h+='</div>';
+      });
+    }else{
+      h+='<div style="font-size:11px;color:var(--muted);padding:4px 0">No FOS persons added</div>';
+    }
+    // Add FOS form
+    if(hasPerm('channel_partners.add')){
+      h+='<div class="cp-fos-add">';
+      h+='<input type="text" id="fos-name-'+cp.id+'" placeholder="FOS Name">';
+      h+='<input type="text" id="fos-phone-'+cp.id+'" placeholder="Phone">';
+      h+='<button onclick="addFos('+cp.id+')">+ Add</button>';
+      h+='</div>';
+    }
+    if(hasPerm('channel_partners.edit')||hasPerm('channel_partners.delete')){
+      h+='<div style="margin-top:8px;display:flex;gap:6px">';
+      if(hasPerm('channel_partners.edit')) h+='<button class="bf-list-btn edit" onclick="editCp('+cp.id+')">Edit CP</button>';
+      if(hasPerm('channel_partners.delete')) h+='<button class="bf-list-btn del" onclick="deleteCp('+cp.id+',\''+cp.firm_name.replace(/'/g,"\\'")+'\')">Delete CP</button>';
+      h+='</div>';
+    }
+    h+='</div>';
+    h+='</div>';
+  });
+  el.innerHTML=h;
+}
+
+function toggleCpCard(id){
+  var el=document.getElementById('cp-fos-'+id);
+  el.style.display=el.style.display==='none'?'block':'none';
+}
+
+function showCpForm(id){
+  document.getElementById('cpFormWrap').style.display='block';
+  document.getElementById('cpFormTitle').textContent=id?'&#129309; Edit Channel Partner':'&#129309; Add Channel Partner';
+  document.getElementById('cpEditId').value=id||'';
+  if(!id){
+    ['cpf_firm','cpf_person','cpf_phone','cpf_email','cpf_rera','cpf_address'].forEach(function(f){
+      document.getElementById(f).value='';
+    });
+    cpPhotoData=null;
+    showPhotoPreview(null);
+  }
+  document.getElementById('cpFormWrap').scrollIntoView({behavior:'smooth'});
+}
+
+function hideCpForm(){document.getElementById('cpFormWrap').style.display='none';}
+
+function editCp(id){
+  var cp=allCPs.find(function(c){return c.id===id;});
+  if(!cp) return;
+  showCpForm(id);
+  document.getElementById('cpf_firm').value=cp.firm_name||'';
+  document.getElementById('cpf_person').value=cp.contact_person||'';
+  document.getElementById('cpf_phone').value=cp.phone||'';
+  document.getElementById('cpf_email').value=cp.email||'';
+  document.getElementById('cpf_rera').value=cp.rera_no||'';
+  document.getElementById('cpf_address').value=cp.address||'';
+  // Show existing photo
+  cpPhotoData=null;
+  if(cp.photo){
+    showPhotoPreview(cp.photo);
+  }else{
+    showPhotoPreview(null);
+  }
+}
+
+function saveCp(){
+  var editId=document.getElementById('cpEditId').value;
+  var reqPerm=editId?'channel_partners.edit':'channel_partners.add';
+  if(!hasPerm(reqPerm)){showToast('Access denied: no '+reqPerm+' permission');return;}
+  var firm=document.getElementById('cpf_firm').value.trim();
+  if(!firm){showToast('Firm name is required');return;}
+  var data={
+    firm_name:firm,
+    contact_person:document.getElementById('cpf_person').value.trim(),
+    phone:document.getElementById('cpf_phone').value.trim(),
+    email:document.getElementById('cpf_email').value.trim(),
+    rera_no:document.getElementById('cpf_rera').value.trim(),
+    address:document.getElementById('cpf_address').value.trim()
+  };
+  if(editId){
+    api('PUT','/api/cp/'+editId,data).then(function(resp){
+      if(resp._isDuplicate){showDuplicateAlert(resp);return;}
+      if(cpPhotoData) return uploadCpPhoto(editId);
+    }).then(function(){
+      showToast('CP updated!');hideCpForm();clearPhoto();loadCPs();
+    }).catch(function(){showToast('Error');});
+  }else{
+    api('POST','/api/cp',data).then(function(resp){
+      if(resp._isDuplicate){showDuplicateAlert(resp);return;}
+      if(resp.id&&cpPhotoData) return uploadCpPhoto(resp.id);
+    }).then(function(){
+      showToast('CP added!');hideCpForm();clearPhoto();loadCPs();
+    }).catch(function(){showToast('Error');});
+  }
+}
+
+function deleteCp(id,name){
+  if(!hasPerm('channel_partners.delete')){showToast('Access denied');return;}
+  if(!confirm('Delete channel partner "'+name+'" and all associated FOS persons? This cannot be undone.')) return;
+  api('DELETE','/api/cp/'+id).then(function(resp){
+    if(resp.error){showToast(resp.error);return;}
+    showToast('Channel partner deleted');loadCPs();
+  }).catch(function(e){showToast('Error: '+(e.message||'deleting'));});
+}
+
+function addFos(cpId){
+  if(!hasPerm('channel_partners.add')){showToast('Access denied');return;}
+  var name=document.getElementById('fos-name-'+cpId).value.trim();
+  var phone=document.getElementById('fos-phone-'+cpId).value.trim();
+  if(!name){showToast('FOS name required');return;}
+  api('POST','/api/cp/'+cpId+'/fos',{name:name,phone:phone}).then(function(){
+    showToast('FOS added!');loadCPs();
+  }).catch(function(){showToast('Error');});
+}
+
+function delFos(cpId,fosId){
+  if(!hasPerm('channel_partners.delete')){showToast('Access denied');return;}
+  if(!confirm('Remove this FOS person?')) return;
+  api('DELETE','/api/cp/'+cpId+'/fos/'+fosId).then(function(){
+    loadCPs();
+  }).catch(function(){showToast('Error');});
+}
+
+/* ============================================================
+   CP PHOTO CAPTURE
+   ============================================================ */
+var cpPhotoData=null; // Holds base64 image data for pending upload
+var cameraStream=null;
+var cameraTargetCpId=null;
+
+function openCamera(){
+  var modal=document.getElementById('cameraModal');
+  var video=document.getElementById('camVideo');
+  modal.classList.add('show');
+
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false}).then(function(stream){
+    cameraStream=stream;
+    video.srcObject=stream;
+  }).catch(function(err){
+    closeCamera();
+    showToast('Camera not available: '+err.message);
+  });
+}
+
+function closeCamera(){
+  var modal=document.getElementById('cameraModal');
+  var video=document.getElementById('camVideo');
+  modal.classList.remove('show');
+  if(cameraStream){
+    cameraStream.getTracks().forEach(function(t){t.stop();});
+    cameraStream=null;
+  }
+  video.srcObject=null;
+}
+
+function capturePhoto(){
+  var video=document.getElementById('camVideo');
+  var canvas=document.getElementById('camCanvas');
+  // Set canvas size to video size
+  canvas.width=video.videoWidth;
+  canvas.height=video.videoHeight;
+  var ctx=canvas.getContext('2d');
+  ctx.drawImage(video,0,0);
+  // Get base64 JPEG
+  cpPhotoData=canvas.toDataURL('image/jpeg',0.8);
+  closeCamera();
+  // Show preview
+  showPhotoPreview(cpPhotoData);
+  showToast('Photo captured!');
+}
+
+function onPhotoFileSelect(event){
+  var file=event.target.files[0];
+  if(!file) return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    cpPhotoData=e.target.result;
+    showPhotoPreview(cpPhotoData);
+    showToast('Photo selected!');
+  };
+  reader.readAsDataURL(file);
+}
+
+function showPhotoPreview(src){
+  var el=document.getElementById('cpPhotoPreview');
+  if(src){
+    el.innerHTML='<img src="'+src+'"><br><button onclick="clearPhoto()" style="margin-top:6px;padding:6px 12px;border-radius:6px;border:1px solid #d32f2f;background:#fff;color:#d32f2f;font-size:11px;font-weight:700;cursor:pointer">&#10060; Remove</button>';
+  }else{
+    el.innerHTML='';
+  }
+}
+
+function clearPhoto(){
+  cpPhotoData=null;
+  showPhotoPreview(null);
+  document.getElementById('cpf_fileInput').value='';
+}
+
+function uploadCpPhoto(cpId){
+  if(!cpPhotoData) return Promise.resolve();
+  return api('POST','/api/cp/'+cpId+'/photo',{photo:cpPhotoData}).then(function(resp){
+    cpPhotoData=null;
+    return resp;
+  });
+}
+
+/* ============================================================
+   BOOKING FORM — Customer & CP Selectors
+   ============================================================ */
+function loadCustomersForSelect(){
+  api('GET','/api/customers').then(function(custs){
+    allCustomers=custs||[];
+    var sel=document.getElementById('bf_custSelect');
+    sel.innerHTML='<option value="">-- Select Customer --</option>';
+    custs.forEach(function(c){
+      var uid=c.cust_uid?'['+c.cust_uid+'] ':'';
+      sel.innerHTML+='<option value="'+c.id+'">'+uid+c.name+(c.phone?' ('+c.phone+')':'')+'</option>';
+    });
+  }).catch(function(){});
+}
+
+function loadCPsForSelect(){
+  api('GET','/api/cp').then(function(cps){
+    allCPs=cps||[];
+    var sel=document.getElementById('bf_cpSelect');
+    sel.innerHTML='<option value="">-- No Channel Partner --</option>';
+    cps.forEach(function(cp){
+      sel.innerHTML+='<option value="'+cp.id+'">'+cp.firm_name+(cp.contact_person?' ('+cp.contact_person+')':'')+'</option>';
+    });
+  }).catch(function(){});
+}
+
+function onCustSelect(){
+  var sel=document.getElementById('bf_custSelect');
+  var cid=parseInt(sel.value);
+  if(!cid) return;
+  // Find customer and auto-fill
+  var c=allCustomers.find(function(x){return x.id===cid;});
+  if(!c) return;
+  document.getElementById('bf_app1Name').value=c.name||'';
+  document.getElementById('bf_app1Phone').value=c.phone||'';
+  document.getElementById('bf_app1Email').value=c.email||'';
+  document.getElementById('bf_app1Pan').value=c.pan||'';
+  document.getElementById('bf_app1Aadhar').value=c.aadhar||'';
+  document.getElementById('bf_app1Dob').value=c.dob||'';
+  document.getElementById('bf_app1Addr').value=c.address||'';
+  document.getElementById('bf_app1Company').value=c.company||'';
+  if(c.profession){
+    var radio=document.querySelector('input[name="bf_app1Prof"][value="'+c.profession+'"]');
+    if(radio) radio.checked=true;
+  }
+  if(c.status){
+    var statusVal=c.status==='NRI'?'Non Resident (NRI/PIO/OCI)':'Resident';
+    var sRadio=document.querySelector('input[name="bf_app1Status"][value="'+statusVal+'"]');
+    if(sRadio) sRadio.checked=true;
+  }
+  showToast('Customer details filled!');
+}
+
+function onCpSelect(){
+  var sel=document.getElementById('bf_cpSelect');
+  var cpid=parseInt(sel.value);
+  if(!cpid) return;
+  var cp=allCPs.find(function(x){return x.id===cpid;});
+  if(!cp) return;
+  document.getElementById('bf_cpName').value=cp.firm_name||'';
+  document.getElementById('bf_cpPerson').value=cp.contact_person||'';
+  document.getElementById('bf_cpMobile').value=cp.phone||'';
+  document.getElementById('bf_cpEmail').value=cp.email||'';
+  document.getElementById('bf_cpRera').value=cp.rera_no||'';
+  showToast('CP details filled!');
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+// Warn if opened as file:// instead of through server
+if(window.location.protocol==='file:'){
+  setTimeout(function(){
+    var msg=document.createElement('div');
+    msg.style.cssText='position:fixed;top:0;left:0;right:0;background:#d32f2f;color:#fff;padding:12px 16px;font-size:13px;font-weight:600;z-index:9999;text-align:center';
+    msg.innerHTML='&#9888; Please open via <a href="http://localhost:5001" style="color:#fff;text-decoration:underline;font-weight:800">http://localhost:5001</a> &mdash; CRM features require the server. Run: <b>python3 app.py</b>';
+    document.body.prepend(msg);
+  },500);
+}
+go();
+</script>
+</body>
+</html>
